@@ -110,7 +110,7 @@ export const services: Service[] = [
 
 export const benefits = [
   {
-    value: '12+',
+    value: '2+',
     label: 'лет опыта',
     description: 'Работаем с 2025 года и знаем каждую модель авто.',
   },
