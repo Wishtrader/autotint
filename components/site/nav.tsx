@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Menu, Phone, X } from 'lucide-react'
+
+import { Phone, Menu, X } from 'lucide-react'
 import { company } from '@/lib/site-config'
 
 const links = [
@@ -37,11 +38,10 @@ export function Nav() {
       initial={{ y: -80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
-      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
-        scrolled
+      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${scrolled
           ? 'border-b border-border bg-background/80 backdrop-blur-xl'
           : 'border-b border-transparent'
-      }`}
+        }`}
     >
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:h-20">
         <a href="#home" className="flex items-center gap-2" aria-label={company.name}>

@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, useInView } from 'framer-motion'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { benefits } from '@/lib/site-config'
 import { Reveal } from './reveal'
 
@@ -11,7 +11,7 @@ function Counter({ value }: { value: string }) {
   const [display, setDisplay] = useState(value)
 
   // Extract numeric part for animated count-up; keep suffix/prefix intact.
-  const match = value.match(/^(\D*)(\d+)(.*)$/)
+  const match = useMemo(() => value.match(/^(\D*)(\d+)(.*)$/), [value])
 
   useEffect(() => {
     if (!inView || !match) return
