@@ -11,12 +11,13 @@ import {
 export const company = {
   name: 'AutoTint',
   tagline: 'Премиальная тонировка автомобилей',
+  logo: '/images/logo.png',
   city: 'Гомель',
   address: 'ул. Широкая 13',
-  fullAddress: 'г. Гомель, ул. Широкая 13',
-  phone: '+375 (44) 555-13-13',
-  phoneHref: 'tel:+375445551313',
-  email: 'info@tonika.by',
+  fullAddress: 'г. Гомель, ул. Широкая 4Б, блок 7, к.56',
+  phone: '+375 (25) 653-33-33',
+  phoneHref: 'tel:+375256533333',
+  email: 'info@autotint.by',
   hours: 'Пн–Сб: 9:00 – 20:00',
   hoursShort: 'Ежедневно 9:00 – 20:00',
 } as const
@@ -31,17 +32,17 @@ export type SocialLink = {
 export const socials: SocialLink[] = [
   {
     label: 'Telegram',
-    href: 'https://t.me/tonika',
+    href: 'https://t.me/@id8413775227',
     color: '#229ED9',
   },
   {
     label: 'Viber',
-    href: 'viber://chat?number=%2B375445551313',
+    href: 'viber://chat?number=%2B375256533333',
     color: '#7360F2',
   },
   {
     label: 'WhatsApp',
-    href: 'https://wa.me/375445551313',
+    href: 'https://wa.me/375256533333',
     color: '#25D366',
   },
 ]
@@ -49,7 +50,7 @@ export const socials: SocialLink[] = [
 // Instagram выведен отдельно — это не мессенджер, показываем его в футере.
 export const instagram: SocialLink = {
   label: 'Instagram',
-  href: 'https://instagram.com/tonika',
+  href: 'https://instagram.com/',
   color: '#E4405F',
 }
 

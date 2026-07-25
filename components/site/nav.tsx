@@ -44,13 +44,8 @@ export function Nav() {
         }`}
     >
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:h-20">
-        <a href="#home" className="flex items-center gap-2" aria-label={company.name}>
-          <span className="grid size-9 place-items-center rounded-lg bg-primary font-display text-lg font-bold text-primary-foreground">
-            Т
-          </span>
-          <span className="font-display text-xl font-bold tracking-tight">
-            {company.name}
-          </span>
+        <a href="#home" className="flex items-center gap-2">
+          <img src={company.logo} alt={company.name} className="w-24 h-auto" />
         </a>
 
         <div className="hidden items-center gap-8 lg:flex">

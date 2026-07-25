@@ -18,12 +18,7 @@ export function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-2">
             <a href="#home" className="flex items-center gap-2">
-              <span className="grid size-9 place-items-center rounded-lg bg-primary font-display text-lg font-bold text-primary-foreground">
-                Т
-              </span>
-              <span className="font-display text-xl font-bold tracking-tight">
-                {company.name}
-              </span>
+              <img src={company.logo} alt={company.name} className="w-44 h-auto" />
             </a>
             <p className="mt-4 max-w-sm text-pretty text-sm leading-relaxed text-muted-foreground">
               {company.tagline} в Гомеле. Атермальные и защитные плёнки,
