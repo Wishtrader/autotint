@@ -133,7 +133,10 @@ export function BookingWidget() {
 
     // Fetch confirmed bookings for this date to mark slots as unavailable
     try {
-      const dateStr = day.date.toISOString().split('T')[0]
+      const y = day.date.getFullYear()
+      const m = String(day.date.getMonth() + 1).padStart(2, '0')
+      const d = String(day.date.getDate()).padStart(2, '0')
+      const dateStr = `${y}-${m}-${d}`
       const response = await fetch(`/api/bookings?date=${dateStr}&status=confirmed`)
       const data = await response.json()
 
@@ -177,7 +180,7 @@ export function BookingWidget() {
           phone: formData.phone,
           car: formData.car,
           service: formData.service,
-          booking_date: selectedDay.date.toISOString().split('T')[0],
+          booking_date: `${selectedDay.date.getFullYear()}-${String(selectedDay.date.getMonth() + 1).padStart(2, '0')}-${String(selectedDay.date.getDate()).padStart(2, '0')}`,
           booking_time: selectedSlot.time,
           comment: formData.comment || null,
         }),
