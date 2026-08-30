@@ -196,24 +196,30 @@ export function BookingWidget() {
                 animate="show"
                 className="grid grid-cols-7 gap-1.5"
               >
-                {calendarDays.slice(0, 28).map((day, idx) => (
-                  <motion.button
-                    key={idx}
-                    variants={item}
-                    onClick={() => handleDayClick(day)}
-                    className={cn(
-                      'text-center cursor-pointer rounded-xl py-2 px-1 transition-all duration-200',
-                      selectedDay?.date.toDateString() === day.date.toDateString()
-                        ? 'bg-primary/70 text-white shadow-lg'
-                        : 'hover:bg-white/10 text-white'
-                    )}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <div className="text-[10px] text-white/60 uppercase">{day.dayOfWeek}</div>
-                    <div className="text-sm font-bold">{day.dayNumber}</div>
-                  </motion.button>
-                ))}
+                {calendarDays.slice(0, 28).map((day, idx) => {
+                  const isToday = day.date.toDateString() === new Date().toDateString()
+                  const isSelected = selectedDay?.date.toDateString() === day.date.toDateString()
+                  return (
+                    <motion.button
+                      key={idx}
+                      variants={item}
+                      onClick={() => handleDayClick(day)}
+                      className={cn(
+                        'text-center cursor-pointer rounded-xl py-2 px-1 transition-all duration-200',
+                        isSelected
+                          ? 'bg-primary/70 text-white shadow-lg'
+                          : isToday
+                            ? 'bg-white/15 text-white ring-1 ring-primary/60'
+                            : 'hover:bg-white/10 text-white'
+                      )}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <div className="text-[10px] text-white/60 uppercase">{day.dayOfWeek}</div>
+                      <div className="text-sm font-bold">{day.dayNumber}</div>
+                    </motion.button>
+                  )
+                })}
               </motion.div>
 
               <AnimatePresence mode="wait">
