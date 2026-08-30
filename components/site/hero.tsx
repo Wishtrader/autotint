@@ -94,7 +94,7 @@ export function Hero() {
             <div className="flex items-center gap-2">
               <ShieldCheck className="size-5 text-primary" />
               <span className="text-sm text-muted-foreground">
-                Гарантия <span className="font-semibold text-foreground">5 лет</span>
+                Гарантия <span className="font-semibold text-foreground">от 1 года</span>
               </span>
             </div>
           </motion.div>
