@@ -53,7 +53,7 @@ function formatBookingMessage(booking: Booking): string {
 📅 <b>Дата:</b> ${date}, ${time}
 ${booking.comment ? `💬 <b>Комментарий:</b> ${booking.comment}` : ''}
 
-🔗 <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://autotint.by'}/admin/bookings/${booking.id}">Открыть в админке</a>
+🔗 <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://autotint.vercel.app'}/admin/bookings/${booking.id}">Открыть в админке</a>
   `.trim()
 }
 
@@ -67,7 +67,7 @@ function formatInquiryMessage(booking: Booking): string {
 📋 <b>Услуга:</b> ${booking.service}
 ${booking.comment ? `💬 <b>Комментарий:</b> ${booking.comment}` : ''}
 
-🔗 <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://autotint.by'}/admin/bookings/${booking.id}">Открыть в админке</a>
+🔗 <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://autotint.vercel.app'}/admin/bookings/${booking.id}">Открыть в админке</a>
   `.trim()
 }
 
