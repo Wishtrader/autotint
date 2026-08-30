@@ -1,23 +1,66 @@
 'use client'
 
-import { useState, type FormEvent } from 'react'
+import { useState, useCallback, type FormEvent } from 'react'
 import { motion } from 'framer-motion'
 import { Check, Clock, Loader2, Mail, MapPin, Phone } from 'lucide-react'
 import { company, services, socials } from '@/lib/site-config'
 import { socialIconMap } from './social-icons'
 import { Reveal } from './reveal'
+import { cn } from '@/lib/utils'
 
 const mapSrc = `https://maps.google.com/maps?q=${encodeURIComponent(
   'Гомель, улица Широкая 13',
 )}&z=16&hl=ru&output=embed`
 
+function formatPhone(value: string): string {
+  const digits = value.replace(/\D/g, '').slice(0, 9)
+  if (digits.length === 0) return ''
+  let result = '+375 '
+  if (digits.length > 0) result += `(${digits.slice(0, 2)}`
+  if (digits.length > 2) result += `) ${digits.slice(2, 5)}`
+  if (digits.length > 5) result += `-${digits.slice(5, 7)}`
+  if (digits.length > 7) result += `-${digits.slice(7, 9)}`
+  return result
+}
+
+function validateFields(data: { name: string; car: string; phone: string; service: string }) {
+  const errors: Record<string, string> = {}
+  if (!data.name.trim()) errors.name = 'Введите ваше имя'
+  if (!data.car.trim()) errors.car = 'Введите марку автомобиля'
+  if (!data.service) errors.service = 'Выберите услугу'
+  const phoneDigits = data.phone.replace(/\D/g, '')
+  if (phoneDigits.length === 0) {
+    errors.phone = 'Введите номер телефона'
+  } else if (phoneDigits.length < 9) {
+    errors.phone = 'Введите корректный номер телефона'
+  }
+  return errors
+}
+
 export function Contact() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle')
+  const [formData, setFormData] = useState({
+    name: '',
+    car: '',
+    phone: '',
+    service: '',
+    comment: '',
+  })
+  const [errors, setErrors] = useState<Record<string, string>>({})
+
+  const handlePhoneChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\D/g, '')
+    const localDigits = raw.startsWith('375') ? raw.slice(3) : raw
+    const digits = localDigits.slice(0, 9)
+    setFormData((prev) => ({ ...prev, phone: formatPhone(digits) }))
+  }, [])
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const errs = validateFields(formData)
+    setErrors(errs)
+    if (Object.keys(errs).length > 0) return
     setStatus('loading')
-    // Имитация отправки заявки. Здесь можно подключить реальный бэкенд.
     setTimeout(() => setStatus('success'), 1100)
   }
 
@@ -59,7 +102,11 @@ export function Contact() {
                   </p>
                   <button
                     type="button"
-                    onClick={() => setStatus('idle')}
+                    onClick={() => {
+                      setStatus('idle')
+                      setFormData({ name: '', car: '', phone: '', service: '', comment: '' })
+                      setErrors({})
+                    }}
                     className="mt-6 rounded-full border border-border px-6 py-2.5 text-sm font-semibold transition-colors hover:bg-secondary"
                   >
                     Отправить ещё одну
@@ -68,48 +115,87 @@ export function Contact() {
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="grid gap-5 sm:grid-cols-2">
-                    <Field label="Ваше имя" htmlFor="name">
-                      <input
-                        id="name"
-                        name="name"
-                        required
-                        placeholder="Александр"
-                        className="input"
-                      />
-                    </Field>
-                    <Field label="Телефон" htmlFor="phone">
-                      <input
-                        id="phone"
-                        name="phone"
-                        type="tel"
-                        required
-                        placeholder="+375 (__) ___-__-__"
-                        className="input"
-                      />
-                    </Field>
+                    <div>
+                      <Field label="Ваше имя" htmlFor="name">
+                        <input
+                          id="name"
+                          name="name"
+                          placeholder="Александр"
+                          value={formData.name}
+                          onChange={(e) => {
+                            setFormData({ ...formData, name: e.target.value })
+                            if (errors.name) setErrors({ ...errors, name: '' })
+                          }}
+                          className={cn('input', errors.name && 'border-red-500')}
+                        />
+                      </Field>
+                      {errors.name && (
+                        <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+                      )}
+                    </div>
+                    <div>
+                      <Field label="Телефон" htmlFor="phone">
+                        <input
+                          id="phone"
+                          name="phone"
+                          type="tel"
+                          placeholder="+375 (__) ___-__-__"
+                          value={formData.phone}
+                          onChange={handlePhoneChange}
+                          className={cn('input', errors.phone && 'border-red-500')}
+                        />
+                      </Field>
+                      {errors.phone && (
+                        <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
+                      )}
+                    </div>
                   </div>
 
                   <div className="grid gap-5 sm:grid-cols-2">
-                    <Field label="Марка и модель авто" htmlFor="car">
-                      <input
-                        id="car"
-                        name="car"
-                        placeholder="Volkswagen Passat"
-                        className="input"
-                      />
-                    </Field>
-                    <Field label="Услуга" htmlFor="service">
-                      <select id="service" name="service" className="input" defaultValue="">
-                        <option value="" disabled>
-                          Выберите услугу
-                        </option>
-                        {services.map((s) => (
-                          <option key={s.title} value={s.title}>
-                            {s.title}
+                    <div>
+                      <Field label="Марка и модель авто" htmlFor="car">
+                        <input
+                          id="car"
+                          name="car"
+                          placeholder="Volkswagen Passat"
+                          value={formData.car}
+                          onChange={(e) => {
+                            setFormData({ ...formData, car: e.target.value })
+                            if (errors.car) setErrors({ ...errors, car: '' })
+                          }}
+                          className={cn('input', errors.car && 'border-red-500')}
+                        />
+                      </Field>
+                      {errors.car && (
+                        <p className="text-red-500 text-xs mt-1">{errors.car}</p>
+                      )}
+                    </div>
+                    <div>
+                      <Field label="Услуга" htmlFor="service">
+                        <select
+                          id="service"
+                          name="service"
+                          value={formData.service}
+                          onChange={(e) => {
+                            setFormData({ ...formData, service: e.target.value })
+                            if (errors.service) setErrors({ ...errors, service: '' })
+                          }}
+                          className={cn('input', !formData.service && 'text-muted-foreground', errors.service && 'border-red-500')}
+                        >
+                          <option value="" disabled>
+                            Выберите услугу
                           </option>
-                        ))}
-                      </select>
-                    </Field>
+                          {services.map((s) => (
+                            <option key={s.title} value={s.title}>
+                              {s.title}
+                            </option>
+                          ))}
+                        </select>
+                      </Field>
+                      {errors.service && (
+                        <p className="text-red-500 text-xs mt-1">{errors.service}</p>
+                      )}
+                    </div>
                   </div>
 
                   <Field label="Комментарий" htmlFor="message" optional>
@@ -118,6 +204,8 @@ export function Contact() {
                       name="message"
                       rows={4}
                       placeholder="Удобное время, вопросы, пожелания…"
+                      value={formData.comment}
+                      onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
                       className="input resize-none"
                     />
                   </Field>
