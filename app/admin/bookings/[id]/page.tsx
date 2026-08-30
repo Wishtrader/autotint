@@ -1,0 +1,259 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
+import { ArrowLeft, Phone, Car, CalendarDays, Clock, User, MessageSquare, CheckCircle2, XCircle, Loader2 } from 'lucide-react'
+import Link from 'next/link'
+import { cn } from '@/lib/utils'
+
+interface Booking {
+  id: string
+  name: string
+  phone: string
+  car: string
+  service: string
+  booking_date: string
+  booking_time: string
+  comment: string | null
+  status: string
+  admin_note: string | null
+  created_at: string
+  updated_at: string
+}
+
+const statusLabels: Record<string, string> = {
+  pending: 'Ожидает',
+  confirmed: 'Подтверждена',
+  completed: 'Выполнена',
+  cancelled: 'Отменена',
+}
+
+const statusColors: Record<string, string> = {
+  pending: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
+  confirmed: 'bg-green-500/10 text-green-500 border-green-500/20',
+  completed: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+  cancelled: 'bg-red-500/10 text-red-500 border-red-500/20',
+}
+
+export default function BookingDetailPage() {
+  const params = useParams()
+  const router = useRouter()
+  const [booking, setBooking] = useState<Booking | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [updating, setUpdating] = useState(false)
+  const [adminNote, setAdminNote] = useState('')
+  const supabase = createClient()
+
+  useEffect(() => {
+    const fetchBooking = async () => {
+      const { data } = await supabase
+        .from('bookings')
+        .select('*')
+        .eq('id', params.id)
+        .single()
+
+      if (data) {
+        setBooking(data)
+        setAdminNote(data.admin_note || '')
+      }
+      setLoading(false)
+    }
+
+    fetchBooking()
+  }, [supabase, params.id])
+
+  const updateStatus = async (newStatus: string) => {
+    setUpdating(true)
+    await supabase
+      .from('bookings')
+      .update({ status: newStatus })
+      .eq('id', params.id)
+
+    setBooking((prev) => prev ? { ...prev, status: newStatus } : null)
+    setUpdating(false)
+  }
+
+  const saveNote = async () => {
+    setUpdating(true)
+    await supabase
+      .from('bookings')
+      .update({ admin_note: adminNote })
+      .eq('id', params.id)
+
+    setBooking((prev) => prev ? { ...prev, admin_note: adminNote } : null)
+    setUpdating(false)
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="size-8 animate-spin text-primary" />
+      </div>
+    )
+  }
+
+  if (!booking) {
+    return (
+      <div className="text-center py-20">
+        <p className="text-muted-foreground">Запись не найдена</p>
+        <Link href="/admin/bookings" className="text-primary hover:underline mt-2 inline-block">
+          ← Вернуться к списку
+        </Link>
+      </div>
+    )
+  }
+
+  return (
+    <div className="max-w-2xl">
+      {/* Header */}
+      <div className="flex items-center gap-4 mb-8">
+        <Link
+          href="/admin/bookings"
+          className="rounded-xl border border-border p-2 hover:bg-white/5 transition-colors"
+        >
+          <ArrowLeft className="size-5" />
+        </Link>
+        <div>
+          <h1 className="font-display text-2xl font-bold">Запись клиента</h1>
+          <p className="text-sm text-muted-foreground">
+            Создана {new Date(booking.created_at).toLocaleString('ru-RU')}
+          </p>
+        </div>
+      </div>
+
+      {/* Status badge */}
+      <div className={cn('inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium mb-6', statusColors[booking.status])}>
+        {booking.status === 'confirmed' && <CheckCircle2 className="size-4" />}
+        {booking.status === 'cancelled' && <XCircle className="size-4" />}
+        {statusLabels[booking.status]}
+      </div>
+
+      {/* Info card */}
+      <div className="rounded-xl border border-border bg-card p-6 mb-6">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <User className="size-5 text-muted-foreground" />
+            <div>
+              <p className="text-sm text-muted-foreground">Клиент</p>
+              <p className="font-medium">{booking.name}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Phone className="size-5 text-muted-foreground" />
+            <div>
+              <p className="text-sm text-muted-foreground">Телефон</p>
+              <a href={`tel:${booking.phone}`} className="font-medium text-primary hover:underline">
+                {booking.phone}
+              </a>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Car className="size-5 text-muted-foreground" />
+            <div>
+              <p className="text-sm text-muted-foreground">Автомобиль</p>
+              <p className="font-medium">{booking.car}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <CalendarDays className="size-5 text-muted-foreground" />
+            <div>
+              <p className="text-sm text-muted-foreground">Дата и время</p>
+              <p className="font-medium">
+                {new Date(booking.booking_date).toLocaleDateString('ru-RU', {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                })}{' '}
+                {booking.booking_time}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <Clock className="size-5 text-muted-foreground mt-0.5" />
+            <div>
+              <p className="text-sm text-muted-foreground">Услуга</p>
+              <p className="font-medium">{booking.service}</p>
+            </div>
+          </div>
+
+          {booking.comment && (
+            <div className="flex items-start gap-3">
+              <MessageSquare className="size-5 text-muted-foreground mt-0.5" />
+              <div>
+                <p className="text-sm text-muted-foreground">Комментарий</p>
+                <p className="font-medium">{booking.comment}</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Admin note */}
+      <div className="rounded-xl border border-border bg-card p-6 mb-6">
+        <h3 className="font-semibold mb-3">Заметка админа</h3>
+        <textarea
+          value={adminNote}
+          onChange={(e) => setAdminNote(e.target.value)}
+          placeholder="Добавить заметку к заказу…"
+          rows={3}
+          className="input resize-none mb-3"
+        />
+        <button
+          onClick={saveNote}
+          disabled={updating}
+          className="rounded-lg bg-white/10 px-4 py-2 text-sm font-medium hover:bg-white/15 transition-colors disabled:opacity-50"
+        >
+          {updating ? 'Сохраняем…' : 'Сохранить заметку'}
+        </button>
+      </div>
+
+      {/* Actions */}
+      {booking.status === 'pending' && (
+        <div className="flex gap-3">
+          <button
+            onClick={() => updateStatus('confirmed')}
+            disabled={updating}
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-green-500/10 border border-green-500/20 text-green-500 px-4 py-3 font-medium hover:bg-green-500/20 transition-colors disabled:opacity-50"
+          >
+            <CheckCircle2 className="size-5" />
+            Подтвердить
+          </button>
+          <button
+            onClick={() => updateStatus('cancelled')}
+            disabled={updating}
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-3 font-medium hover:bg-red-500/20 transition-colors disabled:opacity-50"
+          >
+            <XCircle className="size-5" />
+            Отменить
+          </button>
+        </div>
+      )}
+
+      {booking.status === 'confirmed' && (
+        <div className="flex gap-3">
+          <button
+            onClick={() => updateStatus('completed')}
+            disabled={updating}
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-500 px-4 py-3 font-medium hover:bg-blue-500/20 transition-colors disabled:opacity-50"
+          >
+            <CheckCircle2 className="size-5" />
+            Выполнена
+          </button>
+          <button
+            onClick={() => updateStatus('cancelled')}
+            disabled={updating}
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-3 font-medium hover:bg-red-500/20 transition-colors disabled:opacity-50"
+          >
+            <XCircle className="size-5" />
+            Отменить
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}

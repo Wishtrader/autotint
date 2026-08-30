@@ -113,6 +113,8 @@ export function BookingWidget() {
     comment: '',
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
   const phoneInputRef = useRef<HTMLInputElement>(null)
 
   const calendarDays = generateCalendarDays()
@@ -124,10 +126,29 @@ export function BookingWidget() {
     setFormData((prev) => ({ ...prev, phone: formatPhone(digits) }))
   }, [])
 
-  const handleDayClick = (day: DayData) => {
+  const handleDayClick = async (day: DayData) => {
     setSelectedDay(day)
     setSelectedSlot(null)
     setShowForm(false)
+
+    // Fetch confirmed bookings for this date to mark slots as unavailable
+    try {
+      const dateStr = day.date.toISOString().split('T')[0]
+      const response = await fetch(`/api/bookings?date=${dateStr}&status=confirmed`)
+      const data = await response.json()
+
+      if (data.bookings) {
+        const bookedTimes = data.bookings.map((b: { booking_time: string }) => b.booking_time)
+        // Update slots availability
+        const updatedSlots = day.slots.map((slot) => ({
+          ...slot,
+          available: slot.available && !bookedTimes.includes(slot.time),
+        }))
+        setSelectedDay({ ...day, slots: updatedSlots })
+      }
+    } catch {
+      // If API fails, keep original availability
+    }
   }
 
   const handleSlotClick = (slot: TimeSlot) => {
@@ -136,12 +157,46 @@ export function BookingWidget() {
     setShowForm(true)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setSubmitError('')
     const errs = validateFields(formData)
     setErrors(errs)
     if (Object.keys(errs).length > 0) return
-    setFormSubmitted(true)
+
+    if (!selectedDay || !selectedSlot) return
+
+    setSubmitting(true)
+
+    try {
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          phone: formData.phone,
+          car: formData.car,
+          service: formData.service,
+          booking_date: selectedDay.date.toISOString().split('T')[0],
+          booking_time: selectedSlot.time,
+          comment: formData.comment || null,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setSubmitError(data.error || 'Ошибка при отправке заявки')
+        setSubmitting(false)
+        return
+      }
+
+      setFormSubmitted(true)
+    } catch {
+      setSubmitError('Ошибка сети. Попробуйте ещё раз.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const resetForm = () => {
@@ -397,13 +452,18 @@ export function BookingWidget() {
                                 </div>
                               </div>
 
+                              {submitError && (
+                                <p className="text-red-400 text-sm text-center">{submitError}</p>
+                              )}
+
                               <motion.button
                                 type="submit"
-                                className="w-full py-3 rounded-xl bg-gradient-to-r from-black to-primary text-white font-semibold shadow-lg"
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
+                                disabled={submitting}
+                                className="w-full py-3 rounded-xl bg-gradient-to-r from-black to-primary text-white font-semibold shadow-lg disabled:opacity-50"
+                                whileHover={submitting ? {} : { scale: 1.02 }}
+                                whileTap={submitting ? {} : { scale: 0.98 }}
                               >
-                                Отправить
+                                {submitting ? 'Отправляем…' : 'Отправить'}
                               </motion.button>
                             </motion.form>
                           ) : (

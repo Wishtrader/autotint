@@ -47,6 +47,7 @@ export function Contact() {
     comment: '',
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [submitError, setSubmitError] = useState('')
 
   const handlePhoneChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value.replace(/\D/g, '')
@@ -55,13 +56,42 @@ export function Contact() {
     setFormData((prev) => ({ ...prev, phone: formatPhone(digits) }))
   }, [])
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setSubmitError('')
     const errs = validateFields(formData)
     setErrors(errs)
     if (Object.keys(errs).length > 0) return
+
     setStatus('loading')
-    setTimeout(() => setStatus('success'), 1100)
+
+    try {
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          phone: formData.phone,
+          car: formData.car,
+          service: formData.service,
+          comment: formData.comment || null,
+          type: 'inquiry',
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setSubmitError(data.error || 'Ошибка при отправке заявки')
+        setStatus('idle')
+        return
+      }
+
+      setStatus('success')
+    } catch {
+      setSubmitError('Ошибка сети. Попробуйте ещё раз.')
+      setStatus('idle')
+    }
   }
 
   return (
@@ -209,6 +239,10 @@ export function Contact() {
                       className="input resize-none"
                     />
                   </Field>
+
+                  {submitError && (
+                    <p className="text-red-500 text-sm text-center">{submitError}</p>
+                  )}
 
                   <button
                     type="submit"

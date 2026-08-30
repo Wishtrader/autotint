@@ -1,0 +1,121 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { createAdminClient } from '@/lib/supabase/admin'
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const { name, phone, car, service, booking_date, booking_time, comment, type } = body
+
+    if (!name || !phone || !car || !service) {
+      return NextResponse.json(
+        { error: 'Все обязательные поля должны быть заполнены' },
+        { status: 400 }
+      )
+    }
+
+    const supabase = createAdminClient()
+
+    // Check slot availability only if date/time provided
+    if (booking_date && booking_time) {
+      const { data: existing } = await supabase
+        .from('bookings')
+        .select('id')
+        .eq('booking_date', booking_date)
+        .eq('booking_time', booking_time)
+        .eq('status', 'confirmed')
+        .single()
+
+      if (existing) {
+        return NextResponse.json(
+          { error: 'Этот слот уже занят. Выберите другое время.' },
+          { status: 409 }
+        )
+      }
+    }
+
+    // Create booking
+    const { data, error } = await supabase
+      .from('bookings')
+      .insert({
+        name,
+        phone,
+        car,
+        service,
+        booking_date: booking_date || null,
+        booking_time: booking_time || null,
+        comment: comment || null,
+        status: 'pending',
+      })
+      .select()
+      .single()
+
+    if (error) {
+      return NextResponse.json(
+        { error: 'Ошибка при создании записи' },
+        { status: 500 }
+      )
+    }
+
+    // Send Telegram notification (non-blocking)
+    try {
+      const telegramUrl = new URL('/api/telegram', request.url)
+      fetch(telegramUrl.toString(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: type === 'inquiry' ? 'new_inquiry' : 'new_booking',
+          booking: data,
+        }),
+      })
+    } catch {
+      // Telegram notification is optional
+    }
+
+    return NextResponse.json({ booking: data }, { status: 201 })
+  } catch {
+    return NextResponse.json(
+      { error: 'Внутренняя ошибка сервера' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    const supabase = createAdminClient()
+    const { searchParams } = new URL(request.url)
+
+    const date = searchParams.get('date')
+    const status = searchParams.get('status')
+
+    let query = supabase
+      .from('bookings')
+      .select('*')
+      .order('booking_date', { ascending: true })
+      .order('booking_time', { ascending: true })
+
+    if (date) {
+      query = query.eq('booking_date', date)
+    }
+
+    if (status) {
+      query = query.eq('status', status)
+    }
+
+    const { data, error } = await query
+
+    if (error) {
+      return NextResponse.json(
+        { error: 'Ошибка при получении записей' },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json({ bookings: data })
+  } catch {
+    return NextResponse.json(
+      { error: 'Внутренняя ошибка сервера' },
+      { status: 500 }
+    )
+  }
+}
