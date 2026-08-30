@@ -13,7 +13,7 @@ export const company = {
   tagline: 'Премиальная тонировка автомобилей',
   logo: '/images/logo.png',
   city: 'Гомель',
-  address: 'ул. Широкая 13',
+  address: 'ул. Широкая 4Б',
   fullAddress: 'г. Гомель, ул. Широкая 4Б, блок 7, к.56',
   phone: '+375 (25) 653-33-33',
   phoneHref: 'tel:+375256533333',
