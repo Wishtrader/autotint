@@ -1,8 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { useParams } from 'next/navigation'
 import { ArrowLeft, Phone, Car, CalendarDays, Clock, User, MessageSquare, CheckCircle2, XCircle, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
@@ -38,49 +37,42 @@ const statusColors: Record<string, string> = {
 
 export default function BookingDetailPage() {
   const params = useParams()
-  const router = useRouter()
   const [booking, setBooking] = useState<Booking | null>(null)
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(false)
   const [adminNote, setAdminNote] = useState('')
-  const supabase = createClient()
 
   useEffect(() => {
     const fetchBooking = async () => {
-      const { data } = await supabase
-        .from('bookings')
-        .select('*')
-        .eq('id', params.id)
-        .single()
-
-      if (data) {
+      const res = await fetch(`/api/bookings?id=${params.id}`)
+      if (res.ok) {
+        const { booking: data } = await res.json()
         setBooking(data)
         setAdminNote(data.admin_note || '')
       }
       setLoading(false)
     }
-
     fetchBooking()
-  }, [supabase, params.id])
+  }, [params.id])
 
   const updateStatus = async (newStatus: string) => {
     setUpdating(true)
-    await supabase
-      .from('bookings')
-      .update({ status: newStatus })
-      .eq('id', params.id)
-
+    await fetch('/api/bookings', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: params.id, status: newStatus }),
+    })
     setBooking((prev) => prev ? { ...prev, status: newStatus } : null)
     setUpdating(false)
   }
 
   const saveNote = async () => {
     setUpdating(true)
-    await supabase
-      .from('bookings')
-      .update({ admin_note: adminNote })
-      .eq('id', params.id)
-
+    await fetch('/api/bookings', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: params.id, admin_note: adminNote }),
+    })
     setBooking((prev) => prev ? { ...prev, admin_note: adminNote } : null)
     setUpdating(false)
   }
@@ -106,7 +98,6 @@ export default function BookingDetailPage() {
 
   return (
     <div className="max-w-2xl">
-      {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <Link
           href="/admin/bookings"
@@ -122,14 +113,12 @@ export default function BookingDetailPage() {
         </div>
       </div>
 
-      {/* Status badge */}
       <div className={cn('inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium mb-6', statusColors[booking.status])}>
         {booking.status === 'confirmed' && <CheckCircle2 className="size-4" />}
         {booking.status === 'cancelled' && <XCircle className="size-4" />}
         {statusLabels[booking.status]}
       </div>
 
-      {/* Info card */}
       <div className="rounded-xl border border-border bg-card p-6 mb-6">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
@@ -193,7 +182,6 @@ export default function BookingDetailPage() {
         </div>
       </div>
 
-      {/* Admin note */}
       <div className="rounded-xl border border-border bg-card p-6 mb-6">
         <h3 className="font-semibold mb-3">Заметка админа</h3>
         <textarea
@@ -212,7 +200,6 @@ export default function BookingDetailPage() {
         </button>
       </div>
 
-      {/* Actions */}
       {booking.status === 'pending' && (
         <div className="flex gap-3">
           <button

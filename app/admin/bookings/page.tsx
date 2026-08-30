@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import { Search, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -37,31 +36,20 @@ export default function BookingsPage() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
-  const supabase = createClient()
-
-  useEffect(() => {
-    fetchBookings()
-  }, [supabase])
-
-  const fetchBookings = async () => {
-    let query = supabase
-      .from('bookings')
-      .select('id, name, phone, car, service, booking_date, booking_time, status, created_at')
-      .order('booking_date', { ascending: false })
-      .order('booking_time', { ascending: false })
-
-    if (statusFilter !== 'all') {
-      query = query.eq('status', statusFilter)
-    }
-
-    const { data } = await query
-    setBookings(data || [])
-    setLoading(false)
-  }
 
   useEffect(() => {
     fetchBookings()
   }, [statusFilter])
+
+  const fetchBookings = async () => {
+    const params = new URLSearchParams()
+    if (statusFilter !== 'all') params.set('status', statusFilter)
+
+    const res = await fetch(`/api/bookings?${params.toString()}`)
+    const { bookings: data } = await res.json()
+    setBookings(data || [])
+    setLoading(false)
+  }
 
   const filtered = bookings.filter((b) => {
     if (!search) return true
@@ -74,10 +62,11 @@ export default function BookingsPage() {
   })
 
   const updateStatus = async (id: string, newStatus: string) => {
-    await supabase
-      .from('bookings')
-      .update({ status: newStatus })
-      .eq('id', id)
+    await fetch('/api/bookings', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status: newStatus }),
+    })
 
     setBookings((prev) =>
       prev.map((b) => (b.id === id ? { ...b, status: newStatus } : b))
@@ -88,7 +77,6 @@ export default function BookingsPage() {
     <div>
       <h1 className="font-display text-2xl font-bold mb-6">Записи</h1>
 
-      {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
@@ -116,7 +104,6 @@ export default function BookingsPage() {
         </div>
       </div>
 
-      {/* Table */}
       <div className="rounded-xl border border-border bg-card overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-20">

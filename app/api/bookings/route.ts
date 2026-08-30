@@ -80,6 +80,71 @@ export async function POST(request: NextRequest) {
   }
 }
 
+export async function PATCH(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const { id, status, admin_note } = body
+
+    if (!id) {
+      return NextResponse.json({ error: 'Missing booking id' }, { status: 400 })
+    }
+
+    const supabase = createAdminClient()
+    const update: Record<string, string> = {}
+    if (status) update.status = status
+    if (admin_note !== undefined) update.admin_note = admin_note
+
+    const { data, error } = await supabase
+      .from('bookings')
+      .update(update)
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) {
+      return NextResponse.json({ error: 'Update failed' }, { status: 500 })
+    }
+
+    // Send Telegram notification on status change (non-blocking)
+    if (status) {
+      try {
+        const telegramUrl = new URL('/api/telegram', request.url)
+        fetch(telegramUrl.toString(), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'status_change', booking: data }),
+        })
+      } catch {}
+    }
+
+    return NextResponse.json({ booking: data })
+  } catch {
+    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const id = searchParams.get('id')
+
+    if (!id) {
+      return NextResponse.json({ error: 'Missing booking id' }, { status: 400 })
+    }
+
+    const supabase = createAdminClient()
+    const { error } = await supabase.from('bookings').delete().eq('id', id)
+
+    if (error) {
+      return NextResponse.json({ error: 'Delete failed' }, { status: 500 })
+    }
+
+    return NextResponse.json({ success: true })
+  } catch {
+    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+  }
+}
+
 export async function GET(request: NextRequest) {
   try {
     const supabase = createAdminClient()
@@ -87,6 +152,22 @@ export async function GET(request: NextRequest) {
 
     const date = searchParams.get('date')
     const status = searchParams.get('status')
+
+    const id = searchParams.get('id')
+
+    // Single booking by ID
+    if (id) {
+      const { data, error } = await supabase
+        .from('bookings')
+        .select('*')
+        .eq('id', id)
+        .single()
+
+      if (error || !data) {
+        return NextResponse.json({ error: 'Not found' }, { status: 404 })
+      }
+      return NextResponse.json({ booking: data })
+    }
 
     let query = supabase
       .from('bookings')

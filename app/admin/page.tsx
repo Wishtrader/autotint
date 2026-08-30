@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { CalendarDays, Clock, CheckCircle2, XCircle } from 'lucide-react'
 import Link from 'next/link'
 
@@ -29,38 +28,33 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null)
   const [recent, setRecent] = useState<RecentBooking[]>([])
   const [loading, setLoading] = useState(true)
-  const supabase = createClient()
 
   useEffect(() => {
     const fetchData = async () => {
       const today = new Date().toISOString().split('T')[0]
 
-      const [allBookings, todayBookings, recentBookings] = await Promise.all([
-        supabase.from('bookings').select('status'),
-        supabase.from('bookings').select('id').eq('booking_date', today),
-        supabase
-          .from('bookings')
-          .select('id, name, car, service, booking_date, booking_time, status, created_at')
-          .order('created_at', { ascending: false })
-          .limit(5),
-      ])
+      const res = await fetch(`/api/bookings?date=${today}`)
+      const { bookings: todayBookings } = await res.json()
 
-      const all = allBookings.data || []
+      const resAll = await fetch('/api/bookings')
+      const { bookings: allBookings } = await resAll.json()
+
+      const all = allBookings || []
       setStats({
         total: all.length,
-        pending: all.filter((b) => b.status === 'pending').length,
-        confirmed: all.filter((b) => b.status === 'confirmed').length,
-        completed: all.filter((b) => b.status === 'completed').length,
-        cancelled: all.filter((b) => b.status === 'cancelled').length,
-        today: todayBookings.data?.length || 0,
+        pending: all.filter((b: { status: string }) => b.status === 'pending').length,
+        confirmed: all.filter((b: { status: string }) => b.status === 'confirmed').length,
+        completed: all.filter((b: { status: string }) => b.status === 'completed').length,
+        cancelled: all.filter((b: { status: string }) => b.status === 'cancelled').length,
+        today: todayBookings?.length || 0,
       })
 
-      setRecent(recentBookings.data || [])
+      setRecent(all.slice(0, 5))
       setLoading(false)
     }
 
     fetchData()
-  }, [supabase])
+  }, [])
 
   if (loading) {
     return (
@@ -97,7 +91,6 @@ export default function AdminDashboard() {
     <div>
       <h1 className="font-display text-2xl font-bold mb-8">Дашборд</h1>
 
-      {/* Stats grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
         {statCards.map((card) => (
           <div
@@ -111,7 +104,6 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      {/* Recent bookings */}
       <div className="rounded-xl border border-border bg-card">
         <div className="flex items-center justify-between border-b border-border p-4">
           <h2 className="font-semibold">Последние записи</h2>
