@@ -2,8 +2,9 @@
 
 import { useState, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Clock, User, Car, Phone, MessageSquare, X, Check } from 'lucide-react'
+import { Clock, User, Car, Phone, MessageSquare, X, Check, Layers } from 'lucide-react'
 import { useBooking } from './booking-context'
+import { services } from '@/lib/site-config'
 import { cn } from '@/lib/utils'
 
 interface TimeSlot {
@@ -84,10 +85,11 @@ function formatPhone(value: string): string {
   return result
 }
 
-function validateFields(data: { name: string; car: string; phone: string }) {
+function validateFields(data: { name: string; car: string; phone: string; service: string }) {
   const errors: Record<string, string> = {}
   if (!data.name.trim()) errors.name = 'Введите ваше имя'
   if (!data.car.trim()) errors.car = 'Введите марку автомобиля'
+  if (!data.service) errors.service = 'Выберите услугу'
   const phoneDigits = data.phone.replace(/\D/g, '')
   if (phoneDigits.length === 0) {
     errors.phone = 'Введите номер телефона'
@@ -107,6 +109,7 @@ export function BookingWidget() {
     name: '',
     car: '',
     phone: '',
+    service: '',
     comment: '',
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -143,7 +146,7 @@ export function BookingWidget() {
 
   const resetForm = () => {
     setFormSubmitted(false)
-    setFormData({ name: '', car: '', phone: '', comment: '' })
+    setFormData({ name: '', car: '', phone: '', service: '', comment: '' })
     setSelectedDay(null)
     setSelectedSlot(null)
     setShowForm(false)
@@ -342,6 +345,36 @@ export function BookingWidget() {
                                 </div>
                                 {errors.phone && (
                                   <p className="text-red-400 text-xs mt-1 ml-1">{errors.phone}</p>
+                                )}
+                              </div>
+
+                              <div>
+                                <div className="relative">
+                                  <Layers className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                                  <select
+                                    value={formData.service}
+                                    onChange={(e) => {
+                                      setFormData({ ...formData, service: e.target.value })
+                                      if (errors.service) setErrors({ ...errors, service: '' })
+                                    }}
+                                    className={cn(
+                                      'w-full pl-10 pr-4 py-3 rounded-xl bg-white/10 border text-white focus:outline-none focus:ring-2 focus:ring-primary transition-all appearance-none',
+                                      formData.service ? 'text-white' : 'text-white/40',
+                                      errors.service ? 'border-red-500' : 'border-transparent'
+                                    )}
+                                  >
+                                    <option value="" disabled className="bg-[#1a1c1f] text-white/40">
+                                      Выберите услугу *
+                                    </option>
+                                    {services.map((s) => (
+                                      <option key={s.title} value={s.title} className="bg-[#1a1c1f] text-white">
+                                        {s.title} — {s.price}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                                {errors.service && (
+                                  <p className="text-red-400 text-xs mt-1 ml-1">{errors.service}</p>
                                 )}
                               </div>
 
