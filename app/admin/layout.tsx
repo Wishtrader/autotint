@@ -22,7 +22,14 @@ export default function AdminLayout({
   const pathname = usePathname()
   const supabase = createClient()
 
+  const isLoginPage = pathname === '/admin/login'
+
   useEffect(() => {
+    if (isLoginPage) {
+      setLoading(false)
+      return
+    }
+
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
@@ -32,7 +39,7 @@ export default function AdminLayout({
       setLoading(false)
     }
     checkAuth()
-  }, [supabase, router])
+  }, [supabase, router, isLoginPage])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -46,6 +53,11 @@ export default function AdminLayout({
         <Loader2 className="size-8 animate-spin text-primary" />
       </div>
     )
+  }
+
+  // Login page — no sidebar
+  if (isLoginPage) {
+    return <>{children}</>
   }
 
   return (
