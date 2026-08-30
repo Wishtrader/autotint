@@ -4,8 +4,11 @@ import { motion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 import { services } from '@/lib/site-config'
 import { Reveal, Stagger, StaggerItem } from './reveal'
+import { useBooking } from './booking-context'
 
 export function Services() {
+  const { openBooking } = useBooking()
+
   return (
     <section id="services" className="relative py-20 sm:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -45,14 +48,14 @@ export function Services() {
                     <span className="font-display text-lg font-bold text-primary">
                       {service.price}
                     </span>
-                    <a
-                      href="#contact"
-                      className="flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    <button
+                      onClick={openBooking}
+                      className="flex items-center gap-1 text-sm font-medium text-primary transition-colors hover:text-primary-foreground"
                       aria-label={`Записаться: ${service.title}`}
                     >
                       Записаться
                       <ArrowUpRight className="size-4" />
-                    </a>
+                    </button>
                   </div>
                 </motion.article>
               </StaggerItem>

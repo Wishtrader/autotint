@@ -3,10 +3,13 @@
 import { motion } from 'framer-motion'
 import { MapPin, ShieldCheck, Star } from 'lucide-react'
 import { company } from '@/lib/site-config'
+import { useBooking } from './booking-context'
 
 const ease = [0.21, 0.47, 0.32, 0.98] as const
 
 export function Hero() {
+  const { openBooking } = useBooking()
+
   return (
     <section
       id="home"
@@ -61,12 +64,12 @@ export function Hero() {
             transition={{ duration: 0.7, delay: 0.3, ease }}
             className="mt-8 flex flex-col gap-3 sm:flex-row"
           >
-            <a
-              href="#contact"
+            <button
+              onClick={openBooking}
               className="rounded-full bg-primary px-7 py-3.5 text-center text-base font-semibold text-primary-foreground transition-transform hover:scale-105"
             >
               Записаться на тонировку
-            </a>
+            </button>
             <a
               href="#services"
               className="rounded-full border border-border bg-card/50 px-7 py-3.5 text-center text-base font-semibold text-foreground backdrop-blur transition-colors hover:bg-card"

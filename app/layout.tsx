@@ -1,6 +1,7 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Inter, Space_Grotesk } from 'next/font/google'
+import { BookingProvider } from '@/components/site/booking-context'
 import './globals.css'
 
 const inter = Inter({
@@ -54,7 +55,7 @@ export default function RootLayout({
       className={`${inter.variable} ${spaceGrotesk.variable} bg-background`}
     >
       <body className="font-sans antialiased">
-        {children}
+        <BookingProvider>{children}</BookingProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

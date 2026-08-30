@@ -7,6 +7,7 @@ import { Gallery } from '@/components/site/gallery'
 import { Testimonials } from '@/components/site/testimonials'
 import { Contact } from '@/components/site/contact'
 import { Footer } from '@/components/site/footer'
+import { BookingWidget } from '@/components/site/booking-widget'
 
 export default function Page() {
   return (
@@ -22,6 +23,7 @@ export default function Page() {
         <Contact />
       </main>
       <Footer />
+      <BookingWidget />
     </>
   )
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useBooking } from './booking-context'
 
 import { Phone, Menu, X } from 'lucide-react'
 import { company } from '@/lib/site-config'
@@ -18,6 +19,7 @@ const links = [
 export function Nav() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
+  const { openBooking } = useBooking()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -68,12 +70,12 @@ export function Nav() {
             <Phone className="size-4 text-primary" />
             {company.phone}
           </a>
-          <a
-            href="#contact"
+          <button
+            onClick={openBooking}
             className="hidden rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-transform hover:scale-105 md:inline-block"
           >
             Записаться
-          </a>
+          </button>
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
@@ -113,13 +115,15 @@ export function Nav() {
                 <Phone className="size-4 text-primary" />
                 {company.phone}
               </a>
-              <a
-                href="#contact"
-                onClick={() => setOpen(false)}
+              <button
+                onClick={() => {
+                  setOpen(false)
+                  openBooking()
+                }}
                 className="mt-2 rounded-full bg-primary px-5 py-3 text-center text-base font-semibold text-primary-foreground"
               >
                 Записаться
-              </a>
+              </button>
             </div>
           </motion.div>
         )}
