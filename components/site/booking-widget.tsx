@@ -179,7 +179,7 @@ export function BookingWidget() {
                 </div>
                 <button
                   onClick={closeBooking}
-                  className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
+                  className="w-8 h-8 rounded-full bg-black/20 flex items-center justify-center hover:bg-black/30 transition-colors"
                 >
                   <X className="w-4 h-4 text-white" />
                 </button>
