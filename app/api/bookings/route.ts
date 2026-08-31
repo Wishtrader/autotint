@@ -64,10 +64,10 @@ export async function POST(request: NextRequest) {
 
     console.log(`[BOOKING][${ts}] Created:`, { id: data.id, name, booking_date, booking_time })
 
-    // Send Telegram notification (non-blocking)
+    // Send Telegram notification (blocking — Vercel kills function after response)
     try {
       const telegramUrl = new URL('/api/telegram', request.url)
-      fetch(telegramUrl.toString(), {
+      const tgRes = await fetch(telegramUrl.toString(), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -75,8 +75,9 @@ export async function POST(request: NextRequest) {
           booking: data,
         }),
       })
-    } catch {
-      // Telegram notification is optional
+      console.log(`[BOOKING][${ts}] Telegram sent:`, tgRes.status)
+    } catch (e) {
+      console.error(`[BOOKING][${ts}] Telegram failed:`, e)
     }
 
     return NextResponse.json({ booking: data }, { status: 201 })
@@ -114,11 +115,11 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Update failed' }, { status: 500 })
     }
 
-    // Send Telegram notification on status change (non-blocking)
+    // Send Telegram notification on status change (blocking)
     if (status) {
       try {
         const telegramUrl = new URL('/api/telegram', request.url)
-        fetch(telegramUrl.toString(), {
+        await fetch(telegramUrl.toString(), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ type: 'status_changed', booking: data }),
