@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { LayoutDashboard, CalendarDays, LogOut, Loader2 } from 'lucide-react'
+import { LayoutDashboard, CalendarDays, LogOut, Loader2, Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navItems = [
@@ -18,6 +18,7 @@ export default function AdminLayout({
   children: React.ReactNode
 }) {
   const [loading, setLoading] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
   const supabase = createClient()
@@ -41,6 +42,10 @@ export default function AdminLayout({
     checkAuth()
   }, [supabase, router, isLoginPage])
 
+  useEffect(() => {
+    setSidebarOpen(false)
+  }, [pathname])
+
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push('/admin/login')
@@ -55,26 +60,47 @@ export default function AdminLayout({
     )
   }
 
-  // Login page — no sidebar
   if (isLoginPage) {
     return <>{children}</>
   }
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Mobile top bar */}
+      <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between border-b border-border bg-card/80 backdrop-blur-xl px-4 py-3 lg:hidden">
+        <Link href="/admin" className="font-display text-lg font-bold text-primary">
+          AutoTint
+        </Link>
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="rounded-xl p-2 hover:bg-white/10 transition-colors"
+        >
+          {sidebarOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+        </button>
+      </div>
+
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-50 w-64 border-r border-border bg-card/50 backdrop-blur-xl">
+      <aside className={cn(
+        'fixed inset-y-0 left-0 z-50 w-64 border-r border-border bg-card/95 backdrop-blur-xl transition-transform duration-200 lg:translate-x-0',
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      )}>
         <div className="flex h-full flex-col">
-          {/* Logo */}
-          <div className="border-b border-border p-6">
+          <div className="border-b border-border p-5">
             <Link href="/admin" className="font-display text-xl font-bold text-primary">
               AutoTint
             </Link>
             <p className="text-xs text-muted-foreground mt-0.5">Панель управления</p>
           </div>
 
-          {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-1">
+          <nav className="flex-1 p-3 space-y-1">
             {navItems.map((item) => {
               const isActive = item.href === '/admin'
                 ? pathname === '/admin'
@@ -97,8 +123,7 @@ export default function AdminLayout({
             })}
           </nav>
 
-          {/* Logout */}
-          <div className="border-t border-border p-4">
+          <div className="border-t border-border p-3">
             <button
               onClick={handleLogout}
               className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
@@ -111,7 +136,7 @@ export default function AdminLayout({
       </aside>
 
       {/* Main content */}
-      <main className="ml-64 p-8">
+      <main className="pt-16 pb-6 px-4 lg:ml-64 lg:pt-8 lg:px-8">
         {children}
       </main>
     </div>

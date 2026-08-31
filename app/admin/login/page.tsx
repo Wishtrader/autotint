@@ -34,12 +34,12 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+    <div className="min-h-[100dvh] flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
-        <div className="rounded-2xl border border-border bg-card p-8">
-          <div className="text-center mb-8">
-            <h1 className="font-display text-2xl font-bold">AutoTint</h1>
-            <p className="text-muted-foreground text-sm mt-1">Панель управления</p>
+        <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
+          <div className="text-center mb-6 sm:mb-8">
+            <h1 className="font-display text-xl sm:text-2xl font-bold">AutoTint</h1>
+            <p className="text-muted-foreground text-xs sm:text-sm mt-1">Панель управления</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -55,6 +55,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@autotint.by"
                 className="input"
+                autoComplete="email"
               />
             </div>
 
@@ -70,6 +71,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 className="input"
+                autoComplete="current-password"
               />
             </div>
 

@@ -66,7 +66,7 @@ export default function AdminDashboard() {
   }
 
   const statCards = [
-    { label: 'Всего записей', value: stats?.total || 0, icon: CalendarDays, color: 'text-primary' },
+    { label: 'Всего', value: stats?.total || 0, icon: CalendarDays, color: 'text-primary' },
     { label: 'Ожидают', value: stats?.pending || 0, icon: Clock, color: 'text-yellow-500' },
     { label: 'Подтверждены', value: stats?.confirmed || 0, icon: CheckCircle2, color: 'text-green-500' },
     { label: 'Выполнены', value: stats?.completed || 0, icon: CheckCircle2, color: 'text-blue-500' },
@@ -90,56 +90,56 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-bold mb-8">Дашборд</h1>
+      <h1 className="font-display text-xl sm:text-2xl font-bold mb-5 sm:mb-8">Дашборд</h1>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+      <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4 mb-5 sm:mb-8">
         {statCards.map((card) => (
           <div
             key={card.label}
-            className="rounded-xl border border-border bg-card p-4"
+            className="rounded-xl border border-border bg-card p-3 sm:p-4"
           >
-            <card.icon className={`size-5 ${card.color} mb-2`} />
-            <p className="text-2xl font-bold">{card.value}</p>
-            <p className="text-xs text-muted-foreground">{card.label}</p>
+            <card.icon className={`size-4 sm:size-5 ${card.color} mb-1.5 sm:mb-2`} />
+            <p className="text-lg sm:text-2xl font-bold">{card.value}</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground">{card.label}</p>
           </div>
         ))}
       </div>
 
       <div className="rounded-xl border border-border bg-card">
-        <div className="flex items-center justify-between border-b border-border p-4">
-          <h2 className="font-semibold">Последние записи</h2>
+        <div className="flex items-center justify-between border-b border-border p-3 sm:p-4">
+          <h2 className="font-semibold text-sm sm:text-base">Последние записи</h2>
           <Link
             href="/admin/bookings"
-            className="text-sm text-primary hover:underline"
+            className="text-xs sm:text-sm text-primary hover:underline"
           >
-            Все записи →
+            Все →
           </Link>
         </div>
         <div className="divide-y divide-border">
           {recent.length === 0 ? (
-            <p className="p-6 text-center text-muted-foreground">Нет записей</p>
+            <p className="p-6 text-center text-muted-foreground text-sm">Нет записей</p>
           ) : (
             recent.map((booking) => (
               <Link
                 key={booking.id}
                 href={`/admin/bookings/${booking.id}`}
-                className="flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+                className="flex items-center justify-between p-3 sm:p-4 hover:bg-white/5 transition-colors gap-3"
               >
-                <div>
-                  <p className="font-medium">{booking.name}</p>
-                  <p className="text-sm text-muted-foreground">
+                <div className="min-w-0">
+                  <p className="font-medium text-sm sm:text-base truncate">{booking.name}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground truncate">
                     {booking.car} · {booking.service}
                   </p>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm">
+                <div className="text-right shrink-0">
+                  <p className="text-xs sm:text-sm">
                     {new Date(booking.booking_date).toLocaleDateString('ru-RU', {
                       day: 'numeric',
                       month: 'short',
                     })}{' '}
                     {booking.booking_time}
                   </p>
-                  <span className={`inline-block mt-1 rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[booking.status]}`}>
+                  <span className={`inline-block mt-1 rounded-full px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs font-medium ${statusColors[booking.status]}`}>
                     {statusLabels[booking.status]}
                   </span>
                 </div>

@@ -88,8 +88,8 @@ export default function BookingDetailPage() {
   if (!booking) {
     return (
       <div className="text-center py-20">
-        <p className="text-muted-foreground">Запись не найдена</p>
-        <Link href="/admin/bookings" className="text-primary hover:underline mt-2 inline-block">
+        <p className="text-muted-foreground text-sm">Запись не найдена</p>
+        <Link href="/admin/bookings" className="text-primary hover:underline mt-2 inline-block text-sm">
           ← Вернуться к списку
         </Link>
       </div>
@@ -98,60 +98,60 @@ export default function BookingDetailPage() {
 
   return (
     <div className="max-w-2xl">
-      <div className="flex items-center gap-4 mb-8">
+      <div className="flex items-center gap-3 mb-5 sm:mb-8">
         <Link
           href="/admin/bookings"
           className="rounded-xl border border-border p-2 hover:bg-white/5 transition-colors"
         >
           <ArrowLeft className="size-5" />
         </Link>
-        <div>
-          <h1 className="font-display text-2xl font-bold">Запись клиента</h1>
-          <p className="text-sm text-muted-foreground">
-            Создана {new Date(booking.created_at).toLocaleString('ru-RU')}
+        <div className="min-w-0">
+          <h1 className="font-display text-lg sm:text-2xl font-bold">Запись клиента</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            {new Date(booking.created_at).toLocaleString('ru-RU')}
           </p>
         </div>
       </div>
 
-      <div className={cn('inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium mb-6', statusColors[booking.status])}>
+      <div className={cn('inline-flex items-center gap-2 rounded-full border px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium mb-4 sm:mb-6', statusColors[booking.status])}>
         {booking.status === 'confirmed' && <CheckCircle2 className="size-4" />}
         {booking.status === 'cancelled' && <XCircle className="size-4" />}
         {statusLabels[booking.status]}
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-6 mb-6">
-        <div className="space-y-4">
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6 mb-4 sm:mb-6">
+        <div className="space-y-3 sm:space-y-4">
           <div className="flex items-center gap-3">
-            <User className="size-5 text-muted-foreground" />
-            <div>
-              <p className="text-sm text-muted-foreground">Клиент</p>
-              <p className="font-medium">{booking.name}</p>
+            <User className="size-4 sm:size-5 text-muted-foreground shrink-0" />
+            <div className="min-w-0">
+              <p className="text-xs sm:text-sm text-muted-foreground">Клиент</p>
+              <p className="font-medium text-sm sm:text-base">{booking.name}</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <Phone className="size-5 text-muted-foreground" />
+            <Phone className="size-4 sm:size-5 text-muted-foreground shrink-0" />
             <div>
-              <p className="text-sm text-muted-foreground">Телефон</p>
-              <a href={`tel:${booking.phone}`} className="font-medium text-primary hover:underline">
+              <p className="text-xs sm:text-sm text-muted-foreground">Телефон</p>
+              <a href={`tel:${booking.phone}`} className="font-medium text-primary hover:underline text-sm sm:text-base">
                 {booking.phone}
               </a>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <Car className="size-5 text-muted-foreground" />
-            <div>
-              <p className="text-sm text-muted-foreground">Автомобиль</p>
-              <p className="font-medium">{booking.car}</p>
+            <Car className="size-4 sm:size-5 text-muted-foreground shrink-0" />
+            <div className="min-w-0">
+              <p className="text-xs sm:text-sm text-muted-foreground">Автомобиль</p>
+              <p className="font-medium text-sm sm:text-base truncate">{booking.car}</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <CalendarDays className="size-5 text-muted-foreground" />
+            <CalendarDays className="size-4 sm:size-5 text-muted-foreground shrink-0" />
             <div>
-              <p className="text-sm text-muted-foreground">Дата и время</p>
-              <p className="font-medium">
+              <p className="text-xs sm:text-sm text-muted-foreground">Дата и время</p>
+              <p className="font-medium text-sm sm:text-base">
                 {new Date(booking.booking_date).toLocaleDateString('ru-RU', {
                   day: 'numeric',
                   month: 'long',
@@ -163,38 +163,38 @@ export default function BookingDetailPage() {
           </div>
 
           <div className="flex items-start gap-3">
-            <Clock className="size-5 text-muted-foreground mt-0.5" />
-            <div>
-              <p className="text-sm text-muted-foreground">Услуга</p>
-              <p className="font-medium">{booking.service}</p>
+            <Clock className="size-4 sm:size-5 text-muted-foreground mt-0.5 shrink-0" />
+            <div className="min-w-0">
+              <p className="text-xs sm:text-sm text-muted-foreground">Услуга</p>
+              <p className="font-medium text-sm sm:text-base">{booking.service}</p>
             </div>
           </div>
 
           {booking.comment && (
             <div className="flex items-start gap-3">
-              <MessageSquare className="size-5 text-muted-foreground mt-0.5" />
-              <div>
-                <p className="text-sm text-muted-foreground">Комментарий</p>
-                <p className="font-medium">{booking.comment}</p>
+              <MessageSquare className="size-4 sm:size-5 text-muted-foreground mt-0.5 shrink-0" />
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-muted-foreground">Комментарий</p>
+                <p className="font-medium text-sm sm:text-base">{booking.comment}</p>
               </div>
             </div>
           )}
         </div>
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-6 mb-6">
-        <h3 className="font-semibold mb-3">Заметка админа</h3>
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6 mb-4 sm:mb-6">
+        <h3 className="font-semibold mb-3 text-sm sm:text-base">Заметка админа</h3>
         <textarea
           value={adminNote}
           onChange={(e) => setAdminNote(e.target.value)}
           placeholder="Добавить заметку к заказу…"
           rows={3}
-          className="input resize-none mb-3"
+          className="input resize-none mb-3 text-sm"
         />
         <button
           onClick={saveNote}
           disabled={updating}
-          className="rounded-lg bg-white/10 px-4 py-2 text-sm font-medium hover:bg-white/15 transition-colors disabled:opacity-50"
+          className="rounded-lg bg-white/10 px-4 py-2 text-xs sm:text-sm font-medium hover:bg-white/15 transition-colors disabled:opacity-50"
         >
           {updating ? 'Сохраняем…' : 'Сохранить заметку'}
         </button>
@@ -205,17 +205,17 @@ export default function BookingDetailPage() {
           <button
             onClick={() => updateStatus('confirmed')}
             disabled={updating}
-            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-green-500/10 border border-green-500/20 text-green-500 px-4 py-3 font-medium hover:bg-green-500/20 transition-colors disabled:opacity-50"
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-green-500/10 border border-green-500/20 text-green-500 px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium hover:bg-green-500/20 transition-colors disabled:opacity-50"
           >
-            <CheckCircle2 className="size-5" />
+            <CheckCircle2 className="size-4 sm:size-5" />
             Подтвердить
           </button>
           <button
             onClick={() => updateStatus('cancelled')}
             disabled={updating}
-            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-3 font-medium hover:bg-red-500/20 transition-colors disabled:opacity-50"
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium hover:bg-red-500/20 transition-colors disabled:opacity-50"
           >
-            <XCircle className="size-5" />
+            <XCircle className="size-4 sm:size-5" />
             Отменить
           </button>
         </div>
@@ -226,17 +226,17 @@ export default function BookingDetailPage() {
           <button
             onClick={() => updateStatus('completed')}
             disabled={updating}
-            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-500 px-4 py-3 font-medium hover:bg-blue-500/20 transition-colors disabled:opacity-50"
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-500 px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium hover:bg-blue-500/20 transition-colors disabled:opacity-50"
           >
-            <CheckCircle2 className="size-5" />
+            <CheckCircle2 className="size-4 sm:size-5" />
             Выполнена
           </button>
           <button
             onClick={() => updateStatus('cancelled')}
             disabled={updating}
-            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-3 font-medium hover:bg-red-500/20 transition-colors disabled:opacity-50"
+            className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium hover:bg-red-500/20 transition-colors disabled:opacity-50"
           >
-            <XCircle className="size-5" />
+            <XCircle className="size-4 sm:size-5" />
             Отменить
           </button>
         </div>

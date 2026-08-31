@@ -75,9 +75,9 @@ export default function BookingsPage() {
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-bold mb-6">Записи</h1>
+      <h1 className="font-display text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Записи</h1>
 
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row gap-3 mb-4 sm:mb-6">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <input
@@ -110,64 +110,112 @@ export default function BookingsPage() {
             <div className="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
           </div>
         ) : filtered.length === 0 ? (
-          <p className="p-8 text-center text-muted-foreground">Нет записей</p>
+          <p className="p-8 text-center text-muted-foreground text-sm">Нет записей</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-border text-left text-xs font-medium text-muted-foreground uppercase">
-                  <th className="p-4">Клиент</th>
-                  <th className="p-4">Авто</th>
-                  <th className="p-4">Услуга</th>
-                  <th className="p-4">Дата и время</th>
-                  <th className="p-4">Статус</th>
-                  <th className="p-4">Действия</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {filtered.map((booking) => (
-                  <tr key={booking.id} className="hover:bg-white/5 transition-colors">
-                    <td className="p-4">
-                      <Link href={`/admin/bookings/${booking.id}`} className="hover:text-primary transition-colors">
-                        <p className="font-medium">{booking.name}</p>
-                        <p className="text-xs text-muted-foreground">{booking.phone}</p>
-                      </Link>
-                    </td>
-                    <td className="p-4 text-sm">{booking.car}</td>
-                    <td className="p-4 text-sm">{booking.service}</td>
-                    <td className="p-4 text-sm">
+          <>
+            {/* Desktop table */}
+            <div className="hidden lg:block overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border text-left text-xs font-medium text-muted-foreground uppercase">
+                    <th className="p-4">Клиент</th>
+                    <th className="p-4">Авто</th>
+                    <th className="p-4">Услуга</th>
+                    <th className="p-4">Дата и время</th>
+                    <th className="p-4">Статус</th>
+                    <th className="p-4">Действия</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {filtered.map((booking) => (
+                    <tr key={booking.id} className="hover:bg-white/5 transition-colors">
+                      <td className="p-4">
+                        <Link href={`/admin/bookings/${booking.id}`} className="hover:text-primary transition-colors">
+                          <p className="font-medium">{booking.name}</p>
+                          <p className="text-xs text-muted-foreground">{booking.phone}</p>
+                        </Link>
+                      </td>
+                      <td className="p-4 text-sm">{booking.car}</td>
+                      <td className="p-4 text-sm">{booking.service}</td>
+                      <td className="p-4 text-sm">
+                        {new Date(booking.booking_date).toLocaleDateString('ru-RU', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        })}{' '}
+                        {booking.booking_time}
+                      </td>
+                      <td className="p-4">
+                        <span className={cn('inline-block rounded-full px-2.5 py-0.5 text-xs font-medium', statusColors[booking.status])}>
+                          {statusLabels[booking.status]}
+                        </span>
+                      </td>
+                      <td className="p-4">
+                        <div className="relative">
+                          <select
+                            value={booking.status}
+                            onChange={(e) => updateStatus(booking.id, e.target.value)}
+                            className="text-xs bg-transparent border border-border rounded-lg px-2 py-1 appearance-none cursor-pointer"
+                          >
+                            <option value="pending">Ожидает</option>
+                            <option value="confirmed">Подтвердить</option>
+                            <option value="completed">Выполнена</option>
+                            <option value="cancelled">Отменить</option>
+                          </select>
+                          <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 size-3 text-muted-foreground pointer-events-none" />
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile cards */}
+            <div className="lg:hidden divide-y divide-border">
+              {filtered.map((booking) => (
+                <Link
+                  key={booking.id}
+                  href={`/admin/bookings/${booking.id}`}
+                  className="block p-4 hover:bg-white/5 transition-colors"
+                >
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm">{booking.name}</p>
+                      <p className="text-xs text-muted-foreground">{booking.phone}</p>
+                    </div>
+                    <span className={cn('shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium', statusColors[booking.status])}>
+                      {statusLabels[booking.status]}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-2">{booking.car} · {booking.service}</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-muted-foreground">
                       {new Date(booking.booking_date).toLocaleDateString('ru-RU', {
                         day: 'numeric',
                         month: 'short',
-                        year: 'numeric',
                       })}{' '}
                       {booking.booking_time}
-                    </td>
-                    <td className="p-4">
-                      <span className={cn('inline-block rounded-full px-2.5 py-0.5 text-xs font-medium', statusColors[booking.status])}>
-                        {statusLabels[booking.status]}
-                      </span>
-                    </td>
-                    <td className="p-4">
-                      <div className="relative">
-                        <select
-                          value={booking.status}
-                          onChange={(e) => updateStatus(booking.id, e.target.value)}
-                          className="text-xs bg-transparent border border-border rounded-lg px-2 py-1 appearance-none cursor-pointer"
-                        >
-                          <option value="pending">Ожидает</option>
-                          <option value="confirmed">Подтвердить</option>
-                          <option value="completed">Выполнена</option>
-                          <option value="cancelled">Отменить</option>
-                        </select>
-                        <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 size-3 text-muted-foreground pointer-events-none" />
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </p>
+                    <select
+                      value={booking.status}
+                      onChange={(e) => {
+                        e.preventDefault()
+                        updateStatus(booking.id, e.target.value)
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-[10px] bg-transparent border border-border rounded-lg px-2 py-1 appearance-none cursor-pointer"
+                    >
+                      <option value="pending">Ожидает</option>
+                      <option value="confirmed">Подтвердить</option>
+                      <option value="completed">Выполнена</option>
+                      <option value="cancelled">Отменить</option>
+                    </select>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>
