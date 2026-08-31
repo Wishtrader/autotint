@@ -2,11 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 
 export async function POST(request: NextRequest) {
+  const ts = new Date().toISOString()
   try {
     const body = await request.json()
     const { name, phone, car, service, booking_date, booking_time, comment, type } = body
 
+    console.log(`[BOOKING][${ts}] New request:`, { name, phone, car, service, booking_date, booking_time, type })
+
     if (!name || !phone || !car || !service) {
+      console.log(`[BOOKING][${ts}] Validation failed: missing fields`, { name: !!name, phone: !!phone, car: !!car, service: !!service })
       return NextResponse.json(
         { error: 'Все обязательные поля должны быть заполнены' },
         { status: 400 }
@@ -26,6 +30,7 @@ export async function POST(request: NextRequest) {
         .single()
 
       if (existing) {
+        console.log(`[BOOKING][${ts}] Slot already booked:`, { booking_date, booking_time })
         return NextResponse.json(
           { error: 'Этот слот уже занят. Выберите другое время.' },
           { status: 409 }
@@ -50,11 +55,14 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) {
+      console.error(`[BOOKING][${ts}] DB insert error:`, error)
       return NextResponse.json(
         { error: 'Ошибка при создании записи' },
         { status: 500 }
       )
     }
+
+    console.log(`[BOOKING][${ts}] Created:`, { id: data.id, name, booking_date, booking_time })
 
     // Send Telegram notification (non-blocking)
     try {
@@ -72,7 +80,8 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ booking: data }, { status: 201 })
-  } catch {
+  } catch (e) {
+    console.error(`[BOOKING][${ts}] Fatal error:`, e)
     return NextResponse.json(
       { error: 'Внутренняя ошибка сервера' },
       { status: 500 }
@@ -112,7 +121,7 @@ export async function PATCH(request: NextRequest) {
         fetch(telegramUrl.toString(), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'status_change', booking: data }),
+          body: JSON.stringify({ type: 'status_changed', booking: data }),
         })
       } catch {}
     }
