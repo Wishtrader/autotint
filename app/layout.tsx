@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     'тонировка BMW',
     'тонировка Mercedes',
     'тонировка Toyota',
-    'tonировка Volkswagen',
+    'тонировка Volkswagen',
     'тонировка Kia',
   ],
   authors: [{ name: 'AutoTint' }],
