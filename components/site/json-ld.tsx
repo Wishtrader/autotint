@@ -80,6 +80,61 @@ export function JsonLd() {
     })),
   }
 
+  const faq = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'Сколько стоит тонировка авто в Гомеле?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'От 60 BYN за тонировку фар до 400 BYN за оклейку кузова. Тонировка задних стёкол — от 250 BYN.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Сколько времени занимает тонировка?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'В среднем 1,5 часа. Большинство работ выполняем в день обращения.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Какая гарантия на тонировку?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Официальная гарантия от 1 года на плёнку и работу мастера.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Нужно ли снимать тонировку для техосмотра?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Съёмная тонировка легко снимается перед техосмотром и устанавливается обратно.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Как записаться на тонировку?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Позвоните по телефону +375 (25) 653-33-33 или оставьте заявку на сайте.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Где находится AutoTint?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'г. Гомель, ул. Широкая 4Б, блок 7, к.56. Работаем Пн–Сб 9:00–20:00.',
+        },
+      },
+    ],
+  }
+
   return (
     <>
       <script
@@ -89,6 +144,10 @@ export function JsonLd() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceList) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faq) }}
       />
     </>
   )

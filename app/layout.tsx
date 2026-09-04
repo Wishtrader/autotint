@@ -100,6 +100,9 @@ export const metadata: Metadata = {
     apple: '/apple-icon.png',
   },
   manifest: '/site.webmanifest',
+  other: {
+    'llms-txt': '/llms.txt',
+  },
 }
 
 export const viewport: Viewport = {
