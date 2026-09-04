@@ -1,0 +1,21 @@
+{
+  "name": "AutoTint — Тонировка автомобилей в Гомеле",
+  "short_name": "AutoTint",
+  "description": "Профессиональная тонировка автомобилей премиум-класса в Гомеле",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1c1f",
+  "theme_color": "#1a1c1f",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/apple-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

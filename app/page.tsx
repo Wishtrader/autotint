@@ -8,10 +8,12 @@ import { Testimonials } from '@/components/site/testimonials'
 import { Contact } from '@/components/site/contact'
 import { Footer } from '@/components/site/footer'
 import { BookingWidget } from '@/components/site/booking-widget'
+import { JsonLd } from '@/components/site/json-ld'
 
 export default function Page() {
   return (
     <>
+      <JsonLd />
       <Nav />
       <main>
         <Hero />
