@@ -10,6 +10,7 @@ interface Booking {
   booking_time: string | null
   comment: string | null
   status: string
+  source?: string
 }
 
 async function sendTelegramMessage(text: string, chatId?: string) {
@@ -34,7 +35,10 @@ async function sendTelegramMessage(text: string, chatId?: string) {
 
 async function sendUserConfirmation(telegramUserId: number, booking: Booking) {
   const botToken = process.env.TELEGRAM_BOT_TOKEN
-  if (!botToken) return
+  if (!botToken) {
+    console.error('[TG] No bot token')
+    return
+  }
 
   const date = booking.booking_date
     ? new Date(booking.booking_date).toLocaleDateString('ru-RU', {
@@ -57,7 +61,7 @@ async function sendUserConfirmation(telegramUserId: number, booking: Booking) {
 📍 <b>Адрес:</b> г. Гомель, ул. Широкая 4Б, блок 7, к.56
 📞 <b>Телефон:</b> +375 (25) 653-33-33
 
-Ждём вас! Если нужно перенести запись, позвоните нам.
+Ждём вас!
   `.trim()
 
   try {
@@ -72,10 +76,12 @@ async function sendUserConfirmation(telegramUserId: number, booking: Booking) {
     })
     const data = await res.json()
     if (!data.ok) {
-      console.error('[TWA] User confirmation failed:', data.description)
+      console.error('[TG] User confirmation failed:', data.description, '| chat_id:', telegramUserId)
+    } else {
+      console.log('[TG] User confirmation sent to', telegramUserId)
     }
   } catch (e) {
-    console.error('[TWA] User confirmation error:', e)
+    console.error('[TG] User confirmation error:', e)
   }
 }
 
@@ -89,9 +95,10 @@ function formatBookingMessage(booking: Booking): string {
     : 'Не указана'
 
   const time = booking.booking_time || 'Не указано'
+  const source = (booking as any).source === 'twa' ? '📱 Из Telegram' : '🌐 С сайта'
 
   return `
-🔔 <b>Новая заявка на тонировку</b>
+🔔 <b>Новая заявка на тонировку</b> ${source}
 
 👤 <b>Имя:</b> ${booking.name}
 📞 <b>Телефон:</b> ${booking.phone}

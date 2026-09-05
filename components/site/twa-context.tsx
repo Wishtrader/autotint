@@ -134,14 +134,22 @@ export function TWAProvider({ children }: { children: ReactNode }) {
     const tg = (window as any).Telegram?.WebApp
     if (!tg) return null
     try {
-      const result = await tg.requestContact()
-      if (result?.responseUnsafe?.contact?.phone_number) {
-        const phone = result.responseUnsafe.contact.phone_number
+      // requestContact returns a Promise that resolves to a Contact object
+      const contact = await tg.requestContact()
+      console.log('[TWA] requestContact result:', contact)
+
+      // Try different response formats
+      const phone = contact?.phone_number
+        || contact?.responseUnsafe?.contact?.phone_number
+        || contact?.response?.contact?.phone_number
+
+      if (phone) {
         setUser((prev) => prev ? { ...prev, phone_number: phone } : prev)
         return phone
       }
       return null
-    } catch {
+    } catch (e) {
+      console.error('[TWA] requestContact error:', e)
       return null
     }
   }, [])
