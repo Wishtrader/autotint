@@ -5,7 +5,7 @@ export async function POST(request: NextRequest) {
   const ts = new Date().toISOString()
   try {
     const body = await request.json()
-    const { name, phone, car, service, booking_date, booking_time, comment, type } = body
+    const { name, phone, car, service, booking_date, booking_time, comment, type, source, telegram_user_id } = body
 
     console.log(`[BOOKING][${ts}] New request:`, { name, phone, car, service, booking_date, booking_time, type })
 
@@ -50,6 +50,8 @@ export async function POST(request: NextRequest) {
         booking_time: booking_time || null,
         comment: comment || null,
         status: 'pending',
+        source: source || 'web',
+        telegram_user_id: telegram_user_id || null,
       })
       .select()
       .single()
