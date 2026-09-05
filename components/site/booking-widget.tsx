@@ -102,7 +102,7 @@ function validateFields(data: { name: string; car: string; phone: string; servic
 
 export function BookingWidget() {
   const { isOpen, closeBooking } = useBooking()
-  const { isTWA, user, initData, close: closeTWA } = useTWA()
+  const { isTWA, user, initData, close: closeTWA, requestContact } = useTWA()
   const [selectedDay, setSelectedDay] = useState<DayData | null>(null)
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null)
   const [showForm, setShowForm] = useState(false)
@@ -122,10 +122,23 @@ export function BookingWidget() {
   // Auto-fill from TWA user data
   useEffect(() => {
     if (isTWA && user) {
-      const name = user.first_name || ''
-      setFormData((prev) => ({ ...prev, name }))
+      setFormData((prev) => ({
+        ...prev,
+        name: prev.name || user.first_name || '',
+        phone: prev.phone || user.phone_number || '',
+      }))
     }
   }, [isTWA, user])
+
+  const handleRequestContact = async () => {
+    const phone = await requestContact()
+    if (phone) {
+      // Format phone from Telegram (usually +375...)
+      const digits = phone.replace(/\D/g, '')
+      const localDigits = digits.startsWith('375') ? digits.slice(3) : digits
+      setFormData((prev) => ({ ...prev, phone: formatPhone(localDigits.slice(0, 9)) }))
+    }
+  }
 
   const calendarDays = generateCalendarDays()
 
@@ -428,6 +441,15 @@ export function BookingWidget() {
                                 </div>
                                 {errors.phone && (
                                   <p className="text-red-400 text-xs mt-1 ml-1">{errors.phone}</p>
+                                )}
+                                {isTWA && !formData.phone && (
+                                  <button
+                                    type="button"
+                                    onClick={handleRequestContact}
+                                    className="mt-1 text-xs text-primary hover:text-primary/80 transition-colors ml-1"
+                                  >
+                                    Поделиться телефоном из Telegram
+                                  </button>
                                 )}
                               </div>
 

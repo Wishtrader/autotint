@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react'
 
 interface TWAUser {
   id: number
@@ -17,6 +17,7 @@ interface TWAContextType {
   themeParams: Record<string, string> | null
   ready: () => void
   close: () => void
+  requestContact: () => Promise<string | null>
 }
 
 const TWAContext = createContext<TWAContextType>({
@@ -26,6 +27,7 @@ const TWAContext = createContext<TWAContextType>({
   themeParams: null,
   ready: () => {},
   close: () => {},
+  requestContact: async () => null,
 })
 
 export function TWAProvider({ children }: { children: ReactNode }) {
@@ -53,6 +55,7 @@ export function TWAProvider({ children }: { children: ReactNode }) {
         first_name: u.first_name,
         last_name: u.last_name,
         username: u.username,
+        phone_number: u.phone_number || undefined,
       })
     }
 
@@ -81,6 +84,26 @@ export function TWAProvider({ children }: { children: ReactNode }) {
     if (themeParams.secondary_bg_color) root.style.setProperty('--twa-secondary-bg', themeParams.secondary_bg_color)
   }, [themeParams])
 
+  const requestContact = useCallback(async (): Promise<string | null> => {
+    const tg = window.Telegram?.WebApp
+    if (!tg) return null
+
+    try {
+      const result = await tg.requestContact()
+      if (result && typeof result === 'object' && 'responseUnsafe' in result) {
+        const response = (result as { responseUnsafe?: { contact?: { phone_number?: string } } }).responseUnsafe
+        const phone = response?.contact?.phone_number
+        if (phone) {
+          setUser((prev) => prev ? { ...prev, phone_number: phone } : prev)
+          return phone
+        }
+      }
+      return null
+    } catch {
+      return null
+    }
+  }, [])
+
   const ready = () => {
     window.Telegram?.WebApp?.ready()
   }
@@ -90,7 +113,7 @@ export function TWAProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <TWAContext.Provider value={{ isTWA, user, initData, themeParams, ready, close }}>
+    <TWAContext.Provider value={{ isTWA, user, initData, themeParams, ready, close, requestContact }}>
       {children}
     </TWAContext.Provider>
   )

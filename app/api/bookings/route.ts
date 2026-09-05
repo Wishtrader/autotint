@@ -5,7 +5,7 @@ export async function POST(request: NextRequest) {
   const ts = new Date().toISOString()
   try {
     const body = await request.json()
-    const { name, phone, car, service, booking_date, booking_time, comment, type } = body
+    const { name, phone, car, service, booking_date, booking_time, comment, type, telegram_user_id } = body
 
     console.log(`[BOOKING][${ts}] New request:`, { name, phone, car, service, booking_date, booking_time, type })
 
@@ -78,6 +78,24 @@ export async function POST(request: NextRequest) {
       console.log(`[BOOKING][${ts}] Telegram sent:`, tgRes.status)
     } catch (e) {
       console.error(`[BOOKING][${ts}] Telegram failed:`, e)
+    }
+
+    // Send confirmation to TWA user
+    if (telegram_user_id && type !== 'inquiry') {
+      try {
+        const telegramUrl = new URL('/api/telegram', request.url)
+        await fetch(telegramUrl.toString(), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'booking_confirmed',
+            booking: data,
+            telegram_user_id,
+          }),
+        })
+      } catch (e) {
+        console.error(`[BOOKING][${ts}] User confirmation failed:`, e)
+      }
     }
 
     return NextResponse.json({ booking: data }, { status: 201 })
