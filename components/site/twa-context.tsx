@@ -143,6 +143,14 @@ export function TWAProvider({ children }: { children: ReactNode }) {
   return (
     <TWAContext.Provider value={{ isTWA, user, initData, themeParams, ready, close, requestContact }}>
       {children}
+      {isTWA && (
+        <div className="fixed bottom-2 right-2 z-[200] rounded-lg bg-black/80 p-2 text-[10px] text-white/70 font-mono max-w-[200px]">
+          <div>TWA: {isTWA ? 'YES' : 'NO'}</div>
+          <div>User: {user ? user.first_name : 'NONE'}</div>
+          <div>ID: {user?.id || '—'}</div>
+          <div>Phone: {user?.phone_number || '—'}</div>
+        </div>
+      )}
     </TWAContext.Provider>
   )
 }
