@@ -38,7 +38,17 @@ export function TWAProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const tg = window.Telegram?.WebApp
-    if (!tg) return
+    if (!tg) {
+      console.log('[TWA] No Telegram WebApp found')
+      return
+    }
+
+    console.log('[TWA] Telegram WebApp detected', {
+      initData: !!tg.initData,
+      initDataUnsafe: tg.initDataUnsafe,
+      user: tg.initDataUnsafe?.user,
+      themeParams: tg.themeParams,
+    })
 
     setIsTWA(true)
     tg.ready()
@@ -50,6 +60,7 @@ export function TWAProvider({ children }: { children: ReactNode }) {
     // Extract user from init data
     if (tg.initDataUnsafe?.user) {
       const u = tg.initDataUnsafe.user
+      console.log('[TWA] User found:', u)
       setUser({
         id: u.id,
         first_name: u.first_name,
@@ -57,6 +68,23 @@ export function TWAProvider({ children }: { children: ReactNode }) {
         username: u.username,
         phone_number: u.phone_number || undefined,
       })
+    } else {
+      console.log('[TWA] No user in initDataUnsafe')
+      // Try to get user from URL params (some TWA versions)
+      const params = new URLSearchParams(window.location.search)
+      const userParam = params.get('user')
+      if (userParam) {
+        try {
+          const u = JSON.parse(userParam)
+          console.log('[TWA] User from URL params:', u)
+          setUser({
+            id: u.id,
+            first_name: u.first_name,
+            last_name: u.last_name,
+            username: u.username,
+          })
+        } catch {}
+      }
     }
 
     // Extract theme params

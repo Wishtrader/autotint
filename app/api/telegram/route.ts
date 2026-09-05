@@ -33,6 +33,9 @@ async function sendTelegramMessage(text: string, chatId?: string) {
 }
 
 async function sendUserConfirmation(telegramUserId: number, booking: Booking) {
+  const botToken = process.env.TELEGRAM_BOT_TOKEN
+  if (!botToken) return
+
   const date = booking.booking_date
     ? new Date(booking.booking_date).toLocaleDateString('ru-RU', {
         day: 'numeric',
@@ -57,7 +60,23 @@ async function sendUserConfirmation(telegramUserId: number, booking: Booking) {
 Ждём вас! Если нужно перенести запись, позвоните нам.
   `.trim()
 
-  await sendTelegramMessage(text, String(telegramUserId))
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: telegramUserId,
+        text,
+        parse_mode: 'HTML',
+      }),
+    })
+    const data = await res.json()
+    if (!data.ok) {
+      console.error('[TWA] User confirmation failed:', data.description)
+    }
+  } catch (e) {
+    console.error('[TWA] User confirmation error:', e)
+  }
 }
 
 function formatBookingMessage(booking: Booking): string {

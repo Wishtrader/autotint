@@ -121,6 +121,7 @@ export function BookingWidget() {
 
   // Auto-fill from TWA user data
   useEffect(() => {
+    console.log('[TWA AutoFill]', { isTWA, user, formData })
     if (isTWA && user) {
       setFormData((prev) => ({
         ...prev,
