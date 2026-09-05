@@ -176,6 +176,11 @@ export async function POST(request: NextRequest) {
       case 'status_changed':
         message = formatStatusMessage(booking)
         break
+      case 'booking_confirmed':
+        if (telegram_user_id) {
+          await sendUserConfirmation(telegram_user_id, booking)
+        }
+        return NextResponse.json({ success: true })
       default:
         return NextResponse.json(
           { error: 'Unknown notification type' },

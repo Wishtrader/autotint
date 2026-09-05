@@ -5,7 +5,7 @@ export async function POST(request: NextRequest) {
   const ts = new Date().toISOString()
   try {
     const body = await request.json()
-    const { name, phone, car, service, booking_date, booking_time, comment, type, telegram_user_id } = body
+    const { name, phone, car, service, booking_date, booking_time, comment, type, source, telegram_user_id } = body
 
     console.log(`[BOOKING][${ts}] New request:`, { name, phone, car, service, booking_date, booking_time, type })
 
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: type === 'inquiry' ? 'new_inquiry' : 'new_booking',
-          booking: data,
+          booking: { ...data, source },
         }),
       })
       console.log(`[BOOKING][${ts}] Telegram sent:`, tgRes.status)
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             type: 'booking_confirmed',
-            booking: data,
+            booking: { ...data, source },
             telegram_user_id,
           }),
         })
