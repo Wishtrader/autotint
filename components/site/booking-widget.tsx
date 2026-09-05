@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Clock, User, Car, Phone, MessageSquare, X, Check, Layers } from 'lucide-react'
 import { useBooking } from './booking-context'
+import { useTWA } from './twa-context'
 import { services } from '@/lib/site-config'
 import { cn } from '@/lib/utils'
 
@@ -101,6 +102,7 @@ function validateFields(data: { name: string; car: string; phone: string; servic
 
 export function BookingWidget() {
   const { isOpen, closeBooking } = useBooking()
+  const { isTWA, user, initData, close: closeTWA } = useTWA()
   const [selectedDay, setSelectedDay] = useState<DayData | null>(null)
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null)
   const [showForm, setShowForm] = useState(false)
@@ -116,6 +118,14 @@ export function BookingWidget() {
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
   const phoneInputRef = useRef<HTMLInputElement>(null)
+
+  // Auto-fill from TWA user data
+  useEffect(() => {
+    if (isTWA && user) {
+      const name = user.first_name || ''
+      setFormData((prev) => ({ ...prev, name }))
+    }
+  }, [isTWA, user])
 
   const calendarDays = generateCalendarDays()
 
@@ -184,6 +194,8 @@ export function BookingWidget() {
           booking_date: `${selectedDay.date.getFullYear()}-${String(selectedDay.date.getMonth() + 1).padStart(2, '0')}-${String(selectedDay.date.getDate()).padStart(2, '0')}`,
           booking_time: selectedSlot.time,
           comment: formData.comment || null,
+          source: isTWA ? 'twa' : 'web',
+          telegram_user_id: user?.id || null,
         }),
       })
 
@@ -240,7 +252,13 @@ export function BookingWidget() {
                   <p className="text-white/80 text-sm">Выберите дату и время</p>
                 </div>
                 <button
-                  onClick={closeBooking}
+                  onClick={() => {
+                    if (isTWA) {
+                      closeTWA()
+                    } else {
+                      closeBooking()
+                    }
+                  }}
                   className="w-8 h-8 rounded-full bg-black/20 flex items-center justify-center hover:bg-black/30 transition-colors"
                 >
                   <X className="w-4 h-4 text-white" />
