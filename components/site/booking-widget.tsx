@@ -119,15 +119,31 @@ export function BookingWidget() {
   const [submitError, setSubmitError] = useState('')
   const phoneInputRef = useRef<HTMLInputElement>(null)
 
-  // Auto-fill from TWA user data
+  // Auto-fill from TWA user data or URL params
   useEffect(() => {
-    console.log('[TWA AutoFill]', { isTWA, user, formData })
     if (isTWA && user) {
       setFormData((prev) => ({
         ...prev,
         name: prev.name || user.first_name || '',
         phone: prev.phone || user.phone_number || '',
       }))
+      return
+    }
+
+    // Fallback: try URL params (bot may pass user data as ?user=JSON)
+    const params = new URLSearchParams(window.location.search)
+    const userParam = params.get('user')
+    if (userParam) {
+      try {
+        const u = JSON.parse(userParam)
+        if (u.first_name) {
+          setFormData((prev) => ({ ...prev, name: prev.name || u.first_name }))
+        }
+      } catch {}
+    }
+    const nameParam = params.get('name')
+    if (nameParam) {
+      setFormData((prev) => ({ ...prev, name: prev.name || decodeURIComponent(nameParam) }))
     }
   }, [isTWA, user])
 
