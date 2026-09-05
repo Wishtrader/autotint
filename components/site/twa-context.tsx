@@ -30,74 +30,82 @@ const TWAContext = createContext<TWAContextType>({
   requestContact: async () => null,
 })
 
+function getTelegramWebApp(): any {
+  if (typeof window === 'undefined') return null
+  // Try direct access
+  if ((window as any).Telegram?.WebApp) return (window as any).Telegram.WebApp
+  // Try SDK
+  try {
+    const sdk = require('@telegram-apps/sdk')
+    if (sdk?.init && sdk?.webApp) return sdk.webApp
+  } catch {}
+  return null
+}
+
 export function TWAProvider({ children }: { children: ReactNode }) {
   const [isTWA, setIsTWA] = useState(false)
   const [user, setUser] = useState<TWAUser | null>(null)
   const [initData, setInitData] = useState<string | null>(null)
   const [themeParams, setThemeParams] = useState<Record<string, string> | null>(null)
+  const [debug, setDebug] = useState<string>('loading...')
 
   useEffect(() => {
-    const tg = window.Telegram?.WebApp
-    if (!tg) {
-      console.log('[TWA] No Telegram WebApp found')
-      return
-    }
-
-    console.log('[TWA] Telegram WebApp detected', {
-      initData: !!tg.initData,
-      initDataUnsafe: tg.initDataUnsafe,
-      user: tg.initDataUnsafe?.user,
-      themeParams: tg.themeParams,
-    })
-
-    setIsTWA(true)
-    tg.ready()
-    tg.expand()
-
-    // Extract initData
-    setInitData(tg.initData || null)
-
-    // Extract user from init data
-    if (tg.initDataUnsafe?.user) {
-      const u = tg.initDataUnsafe.user
-      console.log('[TWA] User found:', u)
-      setUser({
-        id: u.id,
-        first_name: u.first_name,
-        last_name: u.last_name,
-        username: u.username,
-        phone_number: u.phone_number || undefined,
-      })
-    } else {
-      console.log('[TWA] No user in initDataUnsafe')
-      // Try to get user from URL params (some TWA versions)
-      const params = new URLSearchParams(window.location.search)
-      const userParam = params.get('user')
-      if (userParam) {
-        try {
-          const u = JSON.parse(userParam)
-          console.log('[TWA] User from URL params:', u)
-          setUser({
-            id: u.id,
-            first_name: u.first_name,
-            last_name: u.last_name,
-            username: u.username,
-          })
-        } catch {}
+    const check = () => {
+      const tg = getTelegramWebApp()
+      if (!tg) {
+        setDebug('no Telegram.WebApp')
+        return false
       }
-    }
 
-    // Extract theme params
-    if (tg.themeParams) {
-      setThemeParams(tg.themeParams as Record<string, string>)
-    }
+      setDebug('WebApp found!')
 
-    // Listen for theme changes
-    tg.onEvent('themeChanged', () => {
+      try {
+        tg.ready()
+        tg.expand()
+      } catch (e) {
+        setDebug('ready/expand failed: ' + String(e))
+      }
+
+      setIsTWA(true)
+      setInitData(tg.initData || 'empty')
+
+      if (tg.initDataUnsafe?.user) {
+        const u = tg.initDataUnsafe.user
+        setDebug('user: ' + u.first_name)
+        setUser({
+          id: u.id,
+          first_name: u.first_name,
+          last_name: u.last_name,
+          username: u.username,
+          phone_number: u.phone_number || undefined,
+        })
+      } else {
+        setDebug('no user. keys: ' + Object.keys(tg.initDataUnsafe || {}).join(','))
+      }
+
       if (tg.themeParams) {
-        setThemeParams({ ...tg.themeParams } as Record<string, string>)
+        setThemeParams(tg.themeParams as Record<string, string>)
       }
-    })
+
+      return true
+    }
+
+    // Try immediately
+    if (check()) return
+
+    // Retry every 500ms for 5 seconds
+    let attempts = 0
+    const interval = setInterval(() => {
+      attempts++
+      if (check() || attempts >= 10) {
+        clearInterval(interval)
+        if (attempts >= 10 && !isTWA) {
+          setDebug('timeout — no Telegram after 5s')
+        }
+      }
+    }, 500)
+
+    return () => clearInterval(interval)
   }, [])
 
   // Apply Telegram theme as CSS variables
@@ -113,7 +121,7 @@ export function TWAProvider({ children }: { children: ReactNode }) {
   }, [themeParams])
 
   const requestContact = useCallback(async (): Promise<string | null> => {
-    const tg = window.Telegram?.WebApp
+    const tg = getTelegramWebApp()
     if (!tg) return null
 
     try {
@@ -133,24 +141,24 @@ export function TWAProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const ready = () => {
-    window.Telegram?.WebApp?.ready()
+    getTelegramWebApp()?.ready()
   }
 
   const close = () => {
-    window.Telegram?.WebApp?.close()
+    getTelegramWebApp()?.close()
   }
 
   return (
     <TWAContext.Provider value={{ isTWA, user, initData, themeParams, ready, close, requestContact }}>
       {children}
-      {isTWA && (
-        <div className="fixed bottom-2 right-2 z-[200] rounded-lg bg-black/80 p-2 text-[10px] text-white/70 font-mono max-w-[200px]">
-          <div>TWA: {isTWA ? 'YES' : 'NO'}</div>
-          <div>User: {user ? user.first_name : 'NONE'}</div>
-          <div>ID: {user?.id || '—'}</div>
-          <div>Phone: {user?.phone_number || '—'}</div>
-        </div>
-      )}
+      {/* Debug overlay — always visible */}
+      <div className="fixed bottom-2 right-2 z-[200] rounded-lg bg-black/90 p-3 text-[11px] text-white/80 font-mono max-w-[250px] shadow-lg border border-white/20">
+        <div className="font-bold mb-1 text-white">TWA Debug</div>
+        <div>State: {debug}</div>
+        <div>isTWA: {isTWA ? 'YES' : 'NO'}</div>
+        <div>User: {user ? user.first_name : 'none'}</div>
+        <div>ID: {user?.id || '—'}</div>
+      </div>
     </TWAContext.Provider>
   )
 }
