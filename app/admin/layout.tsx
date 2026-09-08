@@ -4,12 +4,13 @@ import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { LayoutDashboard, CalendarDays, LogOut, Loader2, Menu, X } from 'lucide-react'
+import { LayoutDashboard, CalendarDays, Send, LogOut, Loader2, Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navItems = [
   { href: '/admin', label: 'Дашборд', icon: LayoutDashboard },
   { href: '/admin/bookings', label: 'Записи', icon: CalendarDays },
+  { href: '/admin/broadcast', label: 'Рассылка', icon: Send },
 ]
 
 export default function AdminLayout({
