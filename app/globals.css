@@ -5,73 +5,73 @@
 @layer base {
   :root {
     color-scheme: dark;
-    --background: #212328;
-    --foreground: #f8f7f5;
-    --card: #2b2d33;
-    --card-foreground: #f8f7f5;
-    --popover: #2b2d33;
-    --popover-foreground: #f8f7f5;
-    --primary: #f0943a;
-    --primary-foreground: #352e1d;
-    --secondary: #3e4047;
-    --secondary-foreground: #f8f7f5;
-    --muted: #3e4047;
-    --muted-foreground: #a8a9ad;
-    --accent: #f0943a;
-    --accent-foreground: #352e1d;
-    --destructive: #c44536;
-    --border: rgba(255, 255, 255, 0.1);
-    --input: rgba(255, 255, 255, 0.12);
-    --ring: #f0943a;
-    --chart-1: #f0943a;
-    --chart-2: #d97a28;
-    --chart-3: #5d5f66;
-    --chart-4: #4a4c52;
-    --chart-5: #3a3c41;
+    --background: 33 35 40;
+    --foreground: 248 247 245;
+    --card: 43 45 51;
+    --card-foreground: 248 247 245;
+    --popover: 43 45 51;
+    --popover-foreground: 248 247 245;
+    --primary: 240 148 58;
+    --primary-foreground: 53 46 29;
+    --secondary: 62 64 71;
+    --secondary-foreground: 248 247 245;
+    --muted: 62 64 71;
+    --muted-foreground: 168 169 173;
+    --accent: 240 148 58;
+    --accent-foreground: 53 46 29;
+    --destructive: 196 69 54;
+    --border: 255 255 255 / 10%;
+    --input: 255 255 255 / 12%;
+    --ring: 240 148 58;
+    --chart-1: 240 148 58;
+    --chart-2: 217 122 40;
+    --chart-3: 93 95 102;
+    --chart-4: 74 76 82;
+    --chart-5: 58 60 65;
     --radius: 0.75rem;
-    --sidebar: #2b2d33;
-    --sidebar-foreground: #f8f7f5;
-    --sidebar-primary: #f0943a;
-    --sidebar-primary-foreground: #352e1d;
-    --sidebar-accent: #3e4047;
-    --sidebar-accent-foreground: #f8f7f5;
-    --sidebar-border: rgba(255, 255, 255, 0.1);
-    --sidebar-ring: #f0943a;
+    --sidebar: 43 45 51;
+    --sidebar-foreground: 248 247 245;
+    --sidebar-primary: 240 148 58;
+    --sidebar-primary-foreground: 53 46 29;
+    --sidebar-accent: 62 64 71;
+    --sidebar-accent-foreground: 248 247 245;
+    --sidebar-border: 255 255 255 / 10%;
+    --sidebar-ring: 240 148 58;
   }
 
   .dark {
     color-scheme: dark;
-    --background: #252525;
-    --foreground: #fafafa;
-    --card: #343434;
-    --card-foreground: #fafafa;
-    --popover: #343434;
-    --popover-foreground: #fafafa;
-    --primary: #ebebeb;
-    --primary-foreground: #343434;
-    --secondary: #454545;
-    --secondary-foreground: #fafafa;
-    --muted: #454545;
-    --muted-foreground: #b5b5b5;
-    --accent: #454545;
-    --accent-foreground: #fafafa;
-    --destructive: #b5533e;
-    --border: rgba(255, 255, 255, 0.1);
-    --input: rgba(255, 255, 255, 0.15);
-    --ring: #8e8e8e;
-    --chart-1: #dfdfdf;
-    --chart-2: #8e8e8e;
-    --chart-3: #707070;
-    --chart-4: #5f5f5f;
-    --chart-5: #454545;
-    --sidebar: #343434;
-    --sidebar-foreground: #fafafa;
-    --sidebar-primary: #7c3aed;
-    --sidebar-primary-foreground: #fafafa;
-    --sidebar-accent: #454545;
-    --sidebar-accent-foreground: #fafafa;
-    --sidebar-border: rgba(255, 255, 255, 0.1);
-    --sidebar-ring: #8e8e8e;
+    --background: 37 37 37;
+    --foreground: 250 250 250;
+    --card: 52 52 52;
+    --card-foreground: 250 250 250;
+    --popover: 52 52 52;
+    --popover-foreground: 250 250 250;
+    --primary: 235 235 235;
+    --primary-foreground: 52 52 52;
+    --secondary: 69 69 69;
+    --secondary-foreground: 250 250 250;
+    --muted: 69 69 69;
+    --muted-foreground: 181 181 181;
+    --accent: 69 69 69;
+    --accent-foreground: 250 250 250;
+    --destructive: 181 83 62;
+    --border: 255 255 255 / 10%;
+    --input: 255 255 255 / 15%;
+    --ring: 142 142 142;
+    --chart-1: 223 223 223;
+    --chart-2: 142 142 142;
+    --chart-3: 112 112 112;
+    --chart-4: 95 95 95;
+    --chart-5: 69 69 69;
+    --sidebar: 52 52 52;
+    --sidebar-foreground: 250 250 250;
+    --sidebar-primary: 124 58 237;
+    --sidebar-primary-foreground: 250 250 250;
+    --sidebar-accent: 69 69 69;
+    --sidebar-accent-foreground: 250 250 250;
+    --sidebar-border: 255 255 255 / 10%;
+    --sidebar-ring: 142 142 142;
   }
 
   * {
@@ -89,23 +89,23 @@
   .input {
     width: 100%;
     border-radius: var(--radius);
-    border: 1px solid var(--border);
-    background-color: var(--background);
+    border: 1px solid rgb(var(--border));
+    background-color: rgb(var(--background));
     padding: 0.75rem 1rem;
     font-size: 0.95rem;
-    color: var(--foreground);
+    color: rgb(var(--foreground));
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
   }
   .input::placeholder {
-    color: var(--muted-foreground);
+    color: rgb(var(--muted-foreground));
   }
   .input:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(240, 148, 58, 0.25);
+    border-color: rgb(var(--primary));
+    box-shadow: 0 0 0 3px rgb(var(--primary) / 0.25);
   }
   .text-gradient {
-    background: linear-gradient(180deg, var(--foreground) 0%, rgba(248, 247, 245, 0.55) 100%);
+    background: linear-gradient(180deg, rgb(var(--foreground)) 0%, rgb(var(--foreground) / 0.55) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
