@@ -17,6 +17,7 @@ interface Booking {
   comment: string | null
   status: string
   admin_note: string | null
+  telegram_user_id: number | null
   created_at: string
   updated_at: string
 }
@@ -63,6 +64,19 @@ export default function BookingDetailPage() {
       body: JSON.stringify({ id: params.id, status: newStatus }),
     })
     setBooking((prev) => prev ? { ...prev, status: newStatus } : null)
+
+    if (newStatus === 'cancelled' && booking?.telegram_user_id) {
+      await fetch('/api/telegram', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'booking_cancelled',
+          booking,
+          telegram_user_id: booking.telegram_user_id,
+        }),
+      })
+    }
+
     setUpdating(false)
   }
 

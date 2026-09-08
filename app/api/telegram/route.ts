@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { bookingConfirmed, bookingCancelled } from '@/lib/telegram/messages'
 
 interface Booking {
   id: string
@@ -178,7 +179,36 @@ export async function POST(request: NextRequest) {
         break
       case 'booking_confirmed':
         if (telegram_user_id) {
-          await sendUserConfirmation(telegram_user_id, booking)
+          const text = bookingConfirmed(booking)
+          const botToken = process.env.TELEGRAM_BOT_TOKEN
+          if (botToken) {
+            await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                chat_id: telegram_user_id,
+                text,
+                parse_mode: 'HTML',
+              }),
+            })
+          }
+        }
+        return NextResponse.json({ success: true })
+      case 'booking_cancelled':
+        if (telegram_user_id) {
+          const text = bookingCancelled(booking)
+          const botToken = process.env.TELEGRAM_BOT_TOKEN
+          if (botToken) {
+            await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                chat_id: telegram_user_id,
+                text,
+                parse_mode: 'HTML',
+              }),
+            })
+          }
         }
         return NextResponse.json({ success: true })
       default:
