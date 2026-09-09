@@ -5,17 +5,17 @@
 @layer base {
   :root {
     color-scheme: dark;
-    --background: 33 35 40;
+    --background: 0 0 0;
     --foreground: 248 247 245;
-    --card: 43 45 51;
+    --card: 17 17 17;
     --card-foreground: 248 247 245;
-    --popover: 43 45 51;
+    --popover: 17 17 17;
     --popover-foreground: 248 247 245;
     --primary: 240 148 58;
     --primary-foreground: 53 46 29;
-    --secondary: 62 64 71;
+    --secondary: 37 37 37;
     --secondary-foreground: 248 247 245;
-    --muted: 62 64 71;
+    --muted: 37 37 37;
     --muted-foreground: 168 169 173;
     --accent: 240 148 58;
     --accent-foreground: 53 46 29;
@@ -29,11 +29,11 @@
     --chart-4: 74 76 82;
     --chart-5: 58 60 65;
     --radius: 0.75rem;
-    --sidebar: 43 45 51;
+    --sidebar: 17 17 17;
     --sidebar-foreground: 248 247 245;
     --sidebar-primary: 240 148 58;
     --sidebar-primary-foreground: 53 46 29;
-    --sidebar-accent: 62 64 71;
+    --sidebar-accent: 37 37 37;
     --sidebar-accent-foreground: 248 247 245;
     --sidebar-border: 255 255 255 / 10%;
     --sidebar-ring: 240 148 58;
@@ -41,37 +41,37 @@
 
   .dark {
     color-scheme: dark;
-    --background: 37 37 37;
+    --background: 0 0 0;
     --foreground: 250 250 250;
-    --card: 52 52 52;
+    --card: 17 17 17;
     --card-foreground: 250 250 250;
-    --popover: 52 52 52;
+    --popover: 17 17 17;
     --popover-foreground: 250 250 250;
-    --primary: 235 235 235;
-    --primary-foreground: 52 52 52;
-    --secondary: 69 69 69;
+    --primary: 240 148 58;
+    --primary-foreground: 53 46 29;
+    --secondary: 37 37 37;
     --secondary-foreground: 250 250 250;
-    --muted: 69 69 69;
+    --muted: 37 37 37;
     --muted-foreground: 181 181 181;
-    --accent: 69 69 69;
+    --accent: 37 37 37;
     --accent-foreground: 250 250 250;
     --destructive: 181 83 62;
     --border: 255 255 255 / 10%;
     --input: 255 255 255 / 15%;
-    --ring: 142 142 142;
-    --chart-1: 223 223 223;
-    --chart-2: 142 142 142;
-    --chart-3: 112 112 112;
-    --chart-4: 95 95 95;
-    --chart-5: 69 69 69;
-    --sidebar: 52 52 52;
+    --ring: 240 148 58;
+    --chart-1: 240 148 58;
+    --chart-2: 217 122 40;
+    --chart-3: 93 95 102;
+    --chart-4: 74 76 82;
+    --chart-5: 58 60 65;
+    --sidebar: 17 17 17;
     --sidebar-foreground: 250 250 250;
-    --sidebar-primary: 124 58 237;
-    --sidebar-primary-foreground: 250 250 250;
-    --sidebar-accent: 69 69 69;
+    --sidebar-primary: 240 148 58;
+    --sidebar-primary-foreground: 53 46 29;
+    --sidebar-accent: 37 37 37;
     --sidebar-accent-foreground: 250 250 250;
     --sidebar-border: 255 255 255 / 10%;
-    --sidebar-ring: 142 142 142;
+    --sidebar-ring: 240 148 58;
   }
 
   * {
