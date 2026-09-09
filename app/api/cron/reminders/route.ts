@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { reminder24h, reminder1h } from '@/lib/telegram/messages'
+
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 import type { BookingData } from '@/lib/telegram/messages'
 
 interface BookingWithTelegram extends BookingData {
