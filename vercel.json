@@ -5,24 +5,18 @@
       "schedule": "0 * * * *"
     }
   ],
-  "routes": [
+  "headers": [
     {
-      "src": "/api/telegram/webhook",
-      "headers": {
-        "Cache-Control": "public, s-maxage=0, stale-while-revalidate=0"
-      }
+      "source": "/api/telegram/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "s-maxage=0, stale-while-revalidate=0" }
+      ]
     },
     {
-      "src": "/api/telegram/broadcast",
-      "headers": {
-        "Cache-Control": "public, s-maxage=0, stale-while-revalidate=0"
-      }
-    },
-    {
-      "src": "/api/cron/(.*)",
-      "headers": {
-        "Cache-Control": "public, s-maxage=0, stale-while-revalidate=0"
-      }
+      "source": "/api/cron/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "s-maxage=0, stale-while-revalidate=0" }
+      ]
     }
   ]
 }

@@ -20,7 +20,7 @@ export default function BroadcastPage() {
 
     try {
       const { data: { session } } = await supabase.auth.getSession()
-      const res = await fetch('/api/telegram/broadcast', {
+      const res = await fetch('/api/telegram/send', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
