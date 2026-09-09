@@ -283,11 +283,7 @@ export function BookingWidget() {
                 </div>
                 <button
                   onClick={() => {
-                    if (isTWA) {
-                      closeTWA()
-                    } else {
-                      closeBooking()
-                    }
+                    closeBooking()
                   }}
                   className="w-8 h-8 rounded-full bg-black/20 flex items-center justify-center hover:bg-black/30 transition-colors"
                 >
