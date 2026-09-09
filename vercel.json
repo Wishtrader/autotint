@@ -4,19 +4,5 @@
       "path": "/api/cron/reminders",
       "schedule": "0 * * * *"
     }
-  ],
-  "headers": [
-    {
-      "source": "/api/telegram/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "s-maxage=0, stale-while-revalidate=0" }
-      ]
-    },
-    {
-      "source": "/api/cron/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "s-maxage=0, stale-while-revalidate=0" }
-      ]
-    }
   ]
 }
