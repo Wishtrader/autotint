@@ -60,7 +60,7 @@ async function sendUserConfirmation(telegramUserId: number, booking: Booking) {
 ⏰ <b>Время:</b> ${time}
 
 📍 <b>Адрес:</b> г. Гомель, ул. Широкая 4Б, блок 7, к.56
-📞 <b>Телефон:</b> +375 (25) 653-33-33
+📞 <b>Телефон:</b> +375 29 342 42 36
 
 Ждём вас!
   `.trim()
