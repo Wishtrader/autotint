@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { MapPin, Phone } from 'lucide-react'
 import { company, footerSocials } from '@/lib/site-config'
 import { socialIconMap } from './social-icons'
@@ -83,9 +84,31 @@ export function Footer() {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 text-sm text-muted-foreground sm:flex-row">
           <p>
-            © {new Date().getFullYear()} {company.name}. Все права защищены.
+            © {new Date().getFullYear()} |{' '}
+            <a
+              href="https://sodastudio.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-foreground"
+            >
+              S.O.D.A
+            </a>{' '}
+            Studio. All rights reserved
           </p>
-          <p>г. Гомель, Республика Беларусь</p>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/privacy-policy"
+              className="transition-colors hover:text-foreground"
+            >
+              Политика конфиденциальности
+            </Link>
+            <Link
+              href="/cookie-policy"
+              className="transition-colors hover:text-foreground"
+            >
+              Политика cookie
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
