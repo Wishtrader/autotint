@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect, startTransition } from 'react'
+import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Clock, User, Car, Phone, MessageSquare, X, Check, Layers } from 'lucide-react'
 import { useBooking } from './booking-context'
@@ -167,9 +168,11 @@ export function BookingWidget() {
   }, [])
 
   const handleDayClick = async (day: DayData) => {
-    setSelectedDay(day)
-    setSelectedSlot(null)
-    setShowForm(false)
+    startTransition(() => {
+      setSelectedDay(day)
+      setSelectedSlot(null)
+      setShowForm(false)
+    })
 
     // Fetch confirmed bookings for this date to mark slots as unavailable
     try {
@@ -187,7 +190,9 @@ export function BookingWidget() {
           ...slot,
           available: slot.available && !bookedTimes.includes(slot.time),
         }))
-        setSelectedDay({ ...day, slots: updatedSlots })
+        startTransition(() => {
+          setSelectedDay({ ...day, slots: updatedSlots })
+        })
       }
     } catch {
       // If API fails, keep original availability
@@ -512,6 +517,16 @@ export function BookingWidget() {
                               {submitError && (
                                 <p className="text-red-400 text-sm text-center">{submitError}</p>
                               )}
+
+                              <p className="text-center text-xs text-muted-foreground">
+                                Нажимая кнопку, вы соглашаетесь с обработкой{' '}
+                                <Link
+                                  href="/privacy-policy"
+                                  className="underline transition-colors hover:text-foreground"
+                                >
+                                  персональных данных
+                                </Link>.
+                              </p>
 
                               <motion.button
                                 type="submit"

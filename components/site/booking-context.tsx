@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import { createContext, useContext, useState, startTransition, type ReactNode } from 'react'
 
 interface BookingContextType {
   isOpen: boolean
@@ -13,8 +13,8 @@ const BookingContext = createContext<BookingContextType | undefined>(undefined)
 export function BookingProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false)
 
-  const openBooking = () => setIsOpen(true)
-  const closeBooking = () => setIsOpen(false)
+  const openBooking = () => startTransition(() => setIsOpen(true))
+  const closeBooking = () => startTransition(() => setIsOpen(false))
 
   return (
     <BookingContext.Provider value={{ isOpen, openBooking, closeBooking }}>
