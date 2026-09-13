@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback, type FormEvent } from 'react'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Check, Clock, Loader2, Mail, MapPin, Phone } from 'lucide-react'
 import { company, services, socials } from '@/lib/site-config'
@@ -260,8 +261,13 @@ export function Contact() {
                     )}
                   </button>
                   <p className="text-center text-xs text-muted-foreground">
-                    Нажимая кнопку, вы соглашаетесь с обработкой персональных
-                    данных.
+                    Нажимая кнопку, вы соглашаетесь с обработкой{' '}
+                    <Link
+                      href="/privacy-policy"
+                      className="underline transition-colors hover:text-foreground"
+                    >
+                      персональных данных
+                    </Link>.
                   </p>
                 </form>
               )}
