@@ -12,9 +12,10 @@ import { Contact } from '@/components/site/contact'
 import { Footer } from '@/components/site/footer'
 import { JsonLd } from '@/components/site/json-ld'
 
-const BookingWidget = dynamic(() => import('@/components/site/booking-widget'), {
-  ssr: false,
-})
+const BookingWidget = dynamic(
+  () => import('@/components/site/booking-widget').then((m) => m.BookingWidget),
+  { ssr: false },
+)
 
 export default function Page() {
   return (
