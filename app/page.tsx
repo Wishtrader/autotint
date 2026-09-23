@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import Script from 'next/script'
 import { Nav } from '@/components/site/nav'
 import { Hero } from '@/components/site/hero'
 import { Services } from '@/components/site/services'
@@ -33,6 +34,14 @@ export default function Page() {
       </main>
       <Footer />
       <BookingWidget />
+      <Script
+        src="https://ecb-frontend.vercel.app/widget/chatbot-widget.js"
+        data-chatbot-id="8917d229-b7eb-474d-9479-bd8037575081"
+        data-api-url="https://ecb-frontend.vercel.app"
+        data-title="Autotint"
+        data-primary-color="#f0953b"
+        strategy="afterInteractive"
+      />
     </>
   )
 }
