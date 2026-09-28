@@ -4,6 +4,7 @@ import { Inter, Space_Grotesk } from 'next/font/google'
 import { BookingProvider } from '@/components/site/booking-context'
 import { TWAProvider } from '@/components/site/twa-context'
 import { Analytics } from '@/components/site/analytics'
+import { SITE_URL } from '@/lib/site'
 import './globals.css'
 
 const inter = Inter({
@@ -17,8 +18,6 @@ const spaceGrotesk = Space_Grotesk({
   variable: '--font-space-grotesk',
   display: 'swap',
 })
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://autotint.vercel.app'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

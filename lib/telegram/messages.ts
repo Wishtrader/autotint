@@ -1,4 +1,5 @@
 import { company } from '../site-config'
+import { SITE_URL as siteUrl } from '../site'
 
 export interface BookingData {
   id: string
@@ -11,8 +12,6 @@ export interface BookingData {
   comment: string | null
   status: string
 }
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://autotint.vercel.app'
 
 function formatDate(dateStr: string): string {
   const date = new Date(dateStr)

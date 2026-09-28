@@ -1,6 +1,5 @@
 import { company, services, testimonials } from '@/lib/site-config'
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://autotint.vercel.app'
+import { SITE_URL } from '@/lib/site'
 
 const avgRating =
   testimonials.reduce((sum, t) => sum + t.rating, 0) / testimonials.length

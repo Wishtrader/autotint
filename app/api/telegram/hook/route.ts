@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { SITE_URL } from '@/lib/site'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
         '',
         'You\'re now subscribed to tinting reminders, exclusive promos, and service updates.',
         '',
-        `🔗 <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://autotint.vercel.app'}">Visit our website</a>`,
+        `🔗 <a href="${SITE_URL}">Visit our website</a>`,
       ].join('\n')
 
       await sendTelegramMessage(from.id, welcome)

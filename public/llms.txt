@@ -12,7 +12,7 @@ AutoTint — студия тонировки автомобилей в Гоме�
 - Телефон: +375 (25) 653-33-33
 - Email: info@autotint.by
 - Режим работы: Пн–Сб 9:00–20:00
-- Сайт: https://autotint.vercel.app
+- Сайт: https://autotint.autos
 
 ## Услуги и цены
 

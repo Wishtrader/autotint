@@ -1,10 +1,31 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { CANONICAL_HOST } from '@/lib/site'
 
-export async function middleware(request: NextRequest) {
+function withRobots(response: NextResponse) {
+  if (process.env.VERCEL_ENV === 'preview') {
+    response.headers.set('X-Robots-Tag', 'noindex')
+  }
+  return response
+}
+
+export async function proxy(request: NextRequest) {
+  const host = request.headers.get('host')?.toLowerCase()
+
+  if (
+    process.env.VERCEL_ENV === 'production' &&
+    host &&
+    host !== CANONICAL_HOST
+  ) {
+    return NextResponse.redirect(
+      `https://${CANONICAL_HOST}${request.nextUrl.pathname}${request.nextUrl.search}`,
+      308
+    )
+  }
+
   // Only run auth check for /admin routes
   if (!request.nextUrl.pathname.startsWith('/admin')) {
-    return NextResponse.next()
+    return withRobots(NextResponse.next())
   }
 
   let supabaseResponse = NextResponse.next({ request })
@@ -41,7 +62,7 @@ export async function middleware(request: NextRequest) {
   ) {
     const url = request.nextUrl.clone()
     url.pathname = '/admin/login'
-    return NextResponse.redirect(url)
+    return withRobots(NextResponse.redirect(url))
   }
 
   // Redirect logged-in users from /admin/login to /admin
@@ -51,14 +72,12 @@ export async function middleware(request: NextRequest) {
   ) {
     const url = request.nextUrl.clone()
     url.pathname = '/admin'
-    return NextResponse.redirect(url)
+    return withRobots(NextResponse.redirect(url))
   }
 
-  return supabaseResponse
+  return withRobots(supabaseResponse)
 }
 
 export const config = {
-  matcher: [
-    '/admin/:path*',
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 }

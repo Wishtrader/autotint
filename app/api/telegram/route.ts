@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { bookingConfirmed, bookingCancelled } from '@/lib/telegram/messages'
+import { SITE_URL } from '@/lib/site'
 
 interface Booking {
   id: string
@@ -108,7 +109,7 @@ function formatBookingMessage(booking: Booking): string {
 📅 <b>Дата:</b> ${date}, ${time}
 ${booking.comment ? `💬 <b>Комментарий:</b> ${booking.comment}` : ''}
 
-🔗 <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://autotint.vercel.app'}/admin/bookings/${booking.id}">Открыть в админке</a>
+🔗 <a href="${SITE_URL}/admin/bookings/${booking.id}">Открыть в админке</a>
   `.trim()
 }
 
@@ -122,7 +123,7 @@ function formatInquiryMessage(booking: Booking): string {
 📋 <b>Услуга:</b> ${booking.service}
 ${booking.comment ? `💬 <b>Комментарий:</b> ${booking.comment}` : ''}
 
-🔗 <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://autotint.vercel.app'}/admin/bookings/${booking.id}">Открыть в админке</a>
+🔗 <a href="${SITE_URL}/admin/bookings/${booking.id}">Открыть в админке</a>
   `.trim()
 }
 
