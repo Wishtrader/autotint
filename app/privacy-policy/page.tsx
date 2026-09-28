@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: 'Политика конфиденциальности',
   description:
     'Политика конфиденциальности персональных данных сайта AutoTint — премиальная тонировка автомобилей в Гомеле.',
+  alternates: {
+    canonical: '/privacy-policy',
+  },
 }
 
 export default function PrivacyPolicyPage() {

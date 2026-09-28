@@ -11,10 +11,13 @@ function withRobots(response: NextResponse) {
 
 export async function proxy(request: NextRequest) {
   const host = request.headers.get('host')?.toLowerCase()
+  const isLocalhost =
+    host?.startsWith('localhost') || host?.startsWith('127.0.0.1')
 
   if (
     process.env.VERCEL_ENV === 'production' &&
     host &&
+    !isLocalhost &&
     host !== CANONICAL_HOST
   ) {
     return NextResponse.redirect(

@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: 'Политика обработки файлов cookie',
   description:
     'Политика в отношении обработки файлов cookie на сайте AutoTint — премиальная тонировка автомобилей в Гомеле.',
+  alternates: {
+    canonical: '/cookie-policy',
+  },
 }
 
 export default function CookiePolicyPage() {
